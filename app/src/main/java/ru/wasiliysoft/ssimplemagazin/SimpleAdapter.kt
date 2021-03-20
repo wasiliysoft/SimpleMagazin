@@ -6,17 +6,40 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
 
+fun interface DoubleClickView {
+    fun onDoubleClick(id: String)
+}
 
-class SimpleAdapter(
-    private val items: MutableList<SimpleItem>
-) : RecyclerView.Adapter<SimpleAdapter.VH>(), RemoveItem {
+class SimpleAdapter : RecyclerView.Adapter<SimpleAdapter.VH>() {
+    var doubleClickCallback: DoubleClickView? = null
+    private var lastClickedId = ""
+    private var lastClickedTime = 0L
+
+    var items: MutableList<SimpleItem> = MutableList(0) { SimpleItem("") }
+        set(value) {
+            if (field.size < value.size) {
+                notifyItemRangeInserted(field.size, value.size - field.size)
+                field = value
+            }
+        }
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = VH(parent)
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.bind(items[position])
+        val item = items[position]
+        holder.bind(item)
+        holder.itemView.setOnClickListener {
+            if (System.currentTimeMillis() - lastClickedTime < 200) {
+                if (item.id == lastClickedId) {
+                    doubleClickCallback?.onDoubleClick(item.id)
+                }
+            }
+            lastClickedTime = System.currentTimeMillis()
+            lastClickedId = item.id
+        }
     }
 
-    fun getItems() = items
     override fun getItemCount() = items.size
 
     fun addItem(si: SimpleItem) {
@@ -24,7 +47,7 @@ class SimpleAdapter(
         notifyItemInserted(itemCount)
     }
 
-    override fun removeAt(position: Int) {
+    fun removeAt(position: Int) {
         items.remove(items[position])
         notifyItemRemoved(position)
     }

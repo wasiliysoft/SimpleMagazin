@@ -4,6 +4,5 @@ import java.util.*
 
 data class SimpleItem(
     val title: String,
-    val id: String = UUID.randomUUID().toString(),
-    var isDone: Boolean = false
+    val id: String = UUID.randomUUID().toString()
 )
