@@ -1,6 +1,7 @@
 package ru.wasiliysoft.ssimplemagazin
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +13,7 @@ fun interface DoubleClickView {
 
 class SimpleAdapter : RecyclerView.Adapter<SimpleAdapter.VH>() {
     var doubleClickCallback: DoubleClickView? = null
+    var longClickCallbacl: View.OnLongClickListener? = null
     private var lastClickedId = ""
     private var lastClickedTime = 0L
 
@@ -37,6 +39,10 @@ class SimpleAdapter : RecyclerView.Adapter<SimpleAdapter.VH>() {
             }
             lastClickedTime = System.currentTimeMillis()
             lastClickedId = item.id
+        }
+        holder.itemView.setOnLongClickListener {
+            longClickCallbacl?.onLongClick(it)
+            return@setOnLongClickListener true
         }
     }
 

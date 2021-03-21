@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Simple Magazin</string>
+    <string name="action_delete">Delete</string>
+
 </resources>

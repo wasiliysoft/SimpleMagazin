@@ -38,7 +38,11 @@ class PendingListFragment() : Fragment(R.layout.fragment_pending_list),
             adapter = simpleAdapter
         }
         simpleAdapter.doubleClickCallback = this
-
+        simpleAdapter.longClickCallbacl = View.OnLongClickListener {
+            val actionMode = PrimaryActionModeCallback()
+            actionMode.startActionMode(view, R.menu.context_action_bar)
+            true
+        }
         val editText = view.findViewById<EditText>(R.id.editText)
         val button = view.findViewById<ImageButton>(R.id.button)
         button.setOnClickListener {
