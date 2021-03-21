@@ -6,16 +6,20 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
+import kotlin.concurrent.fixedRateTimer
 
-fun interface DoubleClickView {
-    fun onDoubleClick(id: String)
+fun interface OnItemClick {
+    fun onItemClick(item: SimpleItem)
+}
+
+fun interface OnItemLongClick {
+    fun onItemLongClick(item: SimpleItem)
 }
 
 class SimpleAdapter : RecyclerView.Adapter<SimpleAdapter.VH>() {
-    var doubleClickCallback: DoubleClickView? = null
-    var longClickCallbacl: View.OnLongClickListener? = null
-    private var lastClickedId = ""
-    private var lastClickedTime = 0L
+    var onItemClickCallback: OnItemClick? = null
+    var longClickCallbacl: OnItemLongClick? = null
+
 
     var items: MutableList<SimpleItem> = MutableList(0) { SimpleItem("") }
         set(value) {
@@ -32,16 +36,10 @@ class SimpleAdapter : RecyclerView.Adapter<SimpleAdapter.VH>() {
         val item = items[position]
         holder.bind(item)
         holder.itemView.setOnClickListener {
-            if (System.currentTimeMillis() - lastClickedTime < 200) {
-                if (item.id == lastClickedId) {
-                    doubleClickCallback?.onDoubleClick(item.id)
-                }
-            }
-            lastClickedTime = System.currentTimeMillis()
-            lastClickedId = item.id
+            onItemClickCallback?.onItemClick(item)
         }
         holder.itemView.setOnLongClickListener {
-            longClickCallbacl?.onLongClick(it)
+            longClickCallbacl?.onItemLongClick(item)
             return@setOnLongClickListener true
         }
     }
@@ -58,11 +56,33 @@ class SimpleAdapter : RecyclerView.Adapter<SimpleAdapter.VH>() {
         notifyItemRemoved(position)
     }
 
+    fun deleteSelectedItem() {
+        items.filter { it.selected }.forEach {
+            removeAt(items.indexOf(it))
+        }
+    }
+
+    fun clearAllSelectedFlags() {
+        items.filter { it.selected }.forEach {
+            val position = items.indexOf(it)
+            items[position].selected = false
+            notifyItemChanged(position)
+        }
+    }
+
+    fun selectItem(si: SimpleItem) {
+        val position = items.indexOf(si)
+        items[position].selected = !items[position].selected
+        notifyItemChanged(position)
+    }
+
     class VH(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.row_item, parent, false)
     ) {
+        private val title: TextView = itemView.findViewById(android.R.id.text1)
         fun bind(si: SimpleItem) {
-            itemView.findViewById<TextView>(android.R.id.text1).text = si.title
+            title.text = si.title
+            itemView.isActivated = si.selected
         }
 
     }

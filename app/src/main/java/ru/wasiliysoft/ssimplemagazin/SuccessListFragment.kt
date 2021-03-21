@@ -3,24 +3,18 @@ package ru.wasiliysoft.ssimplemagazin
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
 
-class SuccessListFragment() : Fragment(R.layout.fragment_succes_list),
-    DoubleClickView {
+class SuccessListFragment() : ListFragment(R.layout.fragment_succes_list) {
     companion object {
         private const val LOG_TAG = "SuccessListFragment"
     }
 
-    private lateinit var prefHelper: PrefHelper
-    private lateinit var simpleAdapter: SimpleAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(LOG_TAG, "onCreate")
-        prefHelper = PrefHelper(requireContext())
-        simpleAdapter = SimpleAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,21 +26,6 @@ class SuccessListFragment() : Fragment(R.layout.fragment_succes_list),
             setHasFixedSize(true)
             adapter = simpleAdapter
         }
-
-        simpleAdapter.doubleClickCallback = this
-
-    }
-
-    override fun onDoubleClick(id: String) {
-        Log.d(LOG_TAG, "doubleClick")
-        simpleAdapter.items.find { it.id == id }?.let {
-            val position = simpleAdapter.items.indexOf(it)
-            val item = simpleAdapter.items[position]
-            val pendingList = prefHelper.pendingList
-            pendingList.add(item)
-            prefHelper.pendingList = pendingList
-            simpleAdapter.removeAt(position)
-        }
     }
 
     override fun onResume() {
@@ -55,9 +34,16 @@ class SuccessListFragment() : Fragment(R.layout.fragment_succes_list),
         simpleAdapter.items = prefHelper.successList
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d(LOG_TAG, "onPause")
+    override fun saveList() {
         prefHelper.successList = simpleAdapter.items
+    }
+
+    override fun onDoubleItemClick(item: SimpleItem) {
+        val position = simpleAdapter.items.indexOf(item)
+        val pendingList = prefHelper.pendingList
+        pendingList.add(item)
+        prefHelper.pendingList = pendingList
+        simpleAdapter.removeAt(position)
+        saveList()
     }
 }

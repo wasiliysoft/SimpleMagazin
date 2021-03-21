@@ -7,13 +7,16 @@ import android.view.View
 import androidx.annotation.MenuRes
 
 
-fun interface OnActionItemClickListener {
+interface ActionModeCallback {
     fun onActionItemClick(item: MenuItem)
+    fun onDestroyActionMode()
 }
 
+
 class PrimaryActionModeCallback : ActionMode.Callback {
-    private var mode: ActionMode? = null
-    private var onActionItemClickListener: OnActionItemClickListener? = null
+    var mode: ActionMode? = null
+    var callback: ActionModeCallback? = null
+
 
     @MenuRes
     private var menuResId = 0
@@ -34,7 +37,7 @@ class PrimaryActionModeCallback : ActionMode.Callback {
     }
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-        onActionItemClickListener?.onActionItemClick(item)
+        callback?.onActionItemClick(item)
         mode.finish()
         return true
     }
@@ -42,6 +45,7 @@ class PrimaryActionModeCallback : ActionMode.Callback {
 
     override fun onDestroyActionMode(mode: ActionMode?) {
         this.mode = null
+        callback?.onDestroyActionMode()
     }
 
     fun startActionMode(
