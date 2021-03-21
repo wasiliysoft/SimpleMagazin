@@ -1,17 +1,16 @@
-package ru.wasiliysoft.ssimplemagazin
+package ru.wasiliysoft.ssimplemagazin.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.wasiliysoft.ssimplemagazin.R
 import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
 
-class PendingListFragment : ListFragment(R.layout.fragment_pending_list) {
+class SuccessListFragment() : ListFragment(R.layout.fragment_succes_list) {
     companion object {
-        private const val LOG_TAG = "PendingListFragment"
+        private const val LOG_TAG = "SuccessListFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,42 +23,28 @@ class PendingListFragment : ListFragment(R.layout.fragment_pending_list) {
         Log.d(LOG_TAG, "onViewCreated")
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.apply {
-            layoutManager = LinearLayoutManager(requireActivity()).apply {
-                stackFromEnd = true
-            }
+            layoutManager = LinearLayoutManager(requireActivity())
             setHasFixedSize(true)
             adapter = simpleAdapter
         }
-
-        val editText = view.findViewById<EditText>(R.id.editText)
-        val button = view.findViewById<ImageButton>(R.id.button)
-        button.setOnClickListener {
-            if (editText.text.isBlank()) return@setOnClickListener
-            simpleAdapter.addItem(SimpleItem(editText.text.toString()))
-            recyclerView.scrollToPosition(simpleAdapter.itemCount - 1)
-            editText.text.clear()
-            saveList()
-        }
     }
-
 
     override fun onResume() {
         super.onResume()
         Log.d(LOG_TAG, "onResume")
-        simpleAdapter.items = prefHelper.pendingList
+        simpleAdapter.items = prefHelper.successList
     }
 
     override fun saveList() {
-        prefHelper.pendingList = simpleAdapter.items
+        prefHelper.successList = simpleAdapter.items
     }
 
     override fun onDoubleItemClick(item: SimpleItem) {
         val position = simpleAdapter.items.indexOf(item)
-        val successList = prefHelper.successList
-        successList.add(item)
-        prefHelper.successList = successList
+        val pendingList = prefHelper.pendingList
+        pendingList.add(item)
+        prefHelper.pendingList = pendingList
         simpleAdapter.removeAt(position)
         saveList()
     }
-
 }

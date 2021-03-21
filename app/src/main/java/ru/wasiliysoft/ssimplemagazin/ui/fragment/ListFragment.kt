@@ -1,4 +1,4 @@
-package ru.wasiliysoft.ssimplemagazin
+package ru.wasiliysoft.ssimplemagazin.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import ru.wasiliysoft.ssimplemagazin.*
 import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
 
 abstract class ListFragment(@LayoutRes layoutResId: Int) :
