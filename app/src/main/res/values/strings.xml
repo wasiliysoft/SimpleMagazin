@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Simple Magazin</string>
     <string name="action_delete">Delete</string>
-
+    <string name="tab_pending">Buy</string>
+    <string name="tab_success">Bought</string>
+    <string name="new_item_hint">New position</string>
 </resources>

@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
 
         val tabView: TabLayout = findViewById(R.id.tabLayout)
         tabView.setupWithViewPager(viewPager)
-
     }
 
     inner class PageAdapter(fm: FragmentManager) :
@@ -34,8 +33,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun getPageTitle(position: Int) = when (position) {
-            0 -> "Купить"
-            else -> "Куплено"
+            0 -> getString(R.string.tab_pending)
+            else -> getString(R.string.tab_success)
         }
     }
 }
