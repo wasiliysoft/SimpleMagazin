@@ -1,4 +1,4 @@
-package ru.wasiliysoft.ssimplemagazin.model
+package ru.wasiliysoft.simplemagazin.model
 
 import java.util.*
 

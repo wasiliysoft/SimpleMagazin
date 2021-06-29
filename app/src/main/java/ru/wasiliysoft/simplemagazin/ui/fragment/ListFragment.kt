@@ -1,4 +1,4 @@
-package ru.wasiliysoft.ssimplemagazin.ui.fragment
+package ru.wasiliysoft.simplemagazin.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -6,8 +6,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import ru.wasiliysoft.ssimplemagazin.*
-import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
+import ru.wasiliysoft.simplemagazin.*
+import ru.wasiliysoft.simplemagazin.model.SimpleItem
 
 abstract class ListFragment(@LayoutRes layoutResId: Int) :
     Fragment(layoutResId),
@@ -30,7 +30,7 @@ abstract class ListFragment(@LayoutRes layoutResId: Int) :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         simpleAdapter.onItemClickCallback = this
-        simpleAdapter.longClickCallbacl = this
+        simpleAdapter.longClickCallback = this
     }
 
     override fun onItemClick(item: SimpleItem) {

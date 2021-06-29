@@ -1,12 +1,12 @@
-package ru.wasiliysoft.ssimplemagazin.ui.fragment
+package ru.wasiliysoft.simplemagazin.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.wasiliysoft.ssimplemagazin.R
-import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
+import ru.wasiliysoft.simplemagazin.R
+import ru.wasiliysoft.simplemagazin.model.SimpleItem
 
 class SuccessListFragment() : ListFragment(R.layout.fragment_succes_list) {
     companion object {

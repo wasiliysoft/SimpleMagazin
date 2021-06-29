@@ -1,9 +1,9 @@
-package ru.wasiliysoft.ssimplemagazin
+package ru.wasiliysoft.simplemagazin
 
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
+import ru.wasiliysoft.simplemagazin.model.SimpleItem
 
 class PrefHelper(ctx: Context) {
     private val prefFileName = ctx.packageName

@@ -1,4 +1,4 @@
-package ru.wasiliysoft.ssimplemagazin.ui.fragment
+package ru.wasiliysoft.simplemagazin.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -7,8 +7,8 @@ import android.widget.EditText
 import android.widget.ImageButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.wasiliysoft.ssimplemagazin.R
-import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
+import ru.wasiliysoft.simplemagazin.R
+import ru.wasiliysoft.simplemagazin.model.SimpleItem
 
 class PendingListFragment : ListFragment(R.layout.fragment_pending_list) {
     companion object {

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E6E6E6"
     tools:context=".ui.MainActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -12,9 +11,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingLeft="16dp"
+        android:paddingLeft="8dp"
         android:paddingTop="4dp"
-        android:paddingRight="16dp"
+        android:paddingRight="8dp"
         android:paddingBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,12 +1,10 @@
-package ru.wasiliysoft.ssimplemagazin
+package ru.wasiliysoft.simplemagazin
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ru.wasiliysoft.ssimplemagazin.model.SimpleItem
-import kotlin.concurrent.fixedRateTimer
+import ru.wasiliysoft.simplemagazin.model.SimpleItem
 
 fun interface OnItemClick {
     fun onItemClick(item: SimpleItem)
@@ -18,7 +16,7 @@ fun interface OnItemLongClick {
 
 class SimpleAdapter : RecyclerView.Adapter<SimpleAdapter.VH>() {
     var onItemClickCallback: OnItemClick? = null
-    var longClickCallbacl: OnItemLongClick? = null
+    var longClickCallback: OnItemLongClick? = null
 
 
     var items: MutableList<SimpleItem> = MutableList(0) { SimpleItem("") }
@@ -39,7 +37,7 @@ class SimpleAdapter : RecyclerView.Adapter<SimpleAdapter.VH>() {
             onItemClickCallback?.onItemClick(item)
         }
         holder.itemView.setOnLongClickListener {
-            longClickCallbacl?.onItemLongClick(item)
+            longClickCallback?.onItemLongClick(item)
             return@setOnLongClickListener true
         }
     }
