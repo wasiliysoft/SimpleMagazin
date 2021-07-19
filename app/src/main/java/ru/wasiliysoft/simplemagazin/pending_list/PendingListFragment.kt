@@ -50,7 +50,7 @@ class PendingListFragment : ListFragment(R.layout.fragment_pending_list) {
 
 
     override fun onDoubleItemClick(item: SimpleItem) {
-        vm.toSuccess(item.id)
+        vm.toSuccess(item)
     }
 
 }

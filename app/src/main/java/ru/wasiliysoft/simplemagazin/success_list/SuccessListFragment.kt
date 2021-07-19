@@ -34,10 +34,7 @@ class SuccessListFragment() : ListFragment(R.layout.fragment_succes_list) {
         }
     }
 
-
     override fun onDoubleItemClick(item: SimpleItem) {
-        vm.toPending(item.id)
+        vm.toPending(item)
     }
-
-
 }

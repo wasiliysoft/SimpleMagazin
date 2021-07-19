@@ -17,11 +17,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         _list.value = dao.getList()
     }
 
-    fun toPending(id: String) {
-        dao.toPending(id)
-        _list.value = dao.getList()
-    }
-
     fun delete(list: List<SimpleItem>) {
         list.forEach {
             dao.delete(it.id)
@@ -29,8 +24,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         _list.value = dao.getList()
     }
 
-    fun toSuccess(id: String) {
-        dao.toSuccess(id)
+    fun toPending(simpleItem: SimpleItem) {
+        dao.toPending(simpleItem)
+        _list.value = dao.getList()
+    }
+
+    fun toSuccess(simpleItem: SimpleItem) {
+        dao.toSuccess(simpleItem)
         _list.value = dao.getList()
     }
 }

@@ -43,18 +43,18 @@ class DAO private constructor(context: Context) {
         commit()
     }
 
-    fun toSuccess(id: String) {
-        list.find { it.id == id }?.apply {
-            isSuccess = true
-            commit()
-        }
+    fun toSuccess(simpleItem: SimpleItem) {
+        list.remove(simpleItem)
+        simpleItem.isSuccess = true
+        list.add(simpleItem)
+        commit()
     }
 
-    fun toPending(id: String) {
-        list.find { it.id == id }?.apply {
-            isSuccess = false
-            commit()
-        }
+    fun toPending(simpleItem: SimpleItem) {
+        list.remove(simpleItem)
+        simpleItem.isSuccess = false
+        list.add(simpleItem)
+        commit()
     }
 
     fun delete(id: String) {
