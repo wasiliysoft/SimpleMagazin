@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin.ui.fragment
+package ru.wasiliysoft.simplemagazin.success_list
 
 import android.os.Bundle
 import android.util.Log
@@ -6,7 +6,8 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.wasiliysoft.simplemagazin.R
-import ru.wasiliysoft.simplemagazin.model.SimpleItem
+import ru.wasiliysoft.simplemagazin.abc_list.ListFragment
+import ru.wasiliysoft.simplemagazin.data.SimpleItem
 
 class SuccessListFragment() : ListFragment(R.layout.fragment_succes_list) {
     companion object {
@@ -21,6 +22,10 @@ class SuccessListFragment() : ListFragment(R.layout.fragment_succes_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(LOG_TAG, "onViewCreated")
+        vm.list.observe(viewLifecycleOwner) { list ->
+            simpleAdapter.setList(list.filter { it.isSuccess })
+        }
+
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.apply {
             layoutManager = LinearLayoutManager(requireActivity())
@@ -29,22 +34,10 @@ class SuccessListFragment() : ListFragment(R.layout.fragment_succes_list) {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d(LOG_TAG, "onResume")
-        simpleAdapter.items = prefHelper.successList
-    }
-
-    override fun saveList() {
-        prefHelper.successList = simpleAdapter.items
-    }
 
     override fun onDoubleItemClick(item: SimpleItem) {
-        val position = simpleAdapter.items.indexOf(item)
-        val pendingList = prefHelper.pendingList
-        pendingList.add(item)
-        prefHelper.pendingList = pendingList
-        simpleAdapter.removeAt(position)
-        saveList()
+        vm.toPending(item.id)
     }
+
+
 }

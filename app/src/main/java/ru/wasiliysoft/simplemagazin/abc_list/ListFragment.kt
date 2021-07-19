@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin.ui.fragment
+package ru.wasiliysoft.simplemagazin.abc_list
 
 import android.os.Bundle
 import android.util.Log
@@ -6,8 +6,10 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import ru.wasiliysoft.simplemagazin.*
-import ru.wasiliysoft.simplemagazin.model.SimpleItem
+import ru.wasiliysoft.simplemagazin.data.SimpleItem
+import ru.wasiliysoft.simplemagazin.main.MainViewModel
 
 abstract class ListFragment(@LayoutRes layoutResId: Int) :
     Fragment(layoutResId),
@@ -17,12 +19,14 @@ abstract class ListFragment(@LayoutRes layoutResId: Int) :
         private const val LOG_TAG = "ListFragment"
     }
 
-    abstract fun saveList()
+
     abstract fun onDoubleItemClick(item: SimpleItem)
 
-    protected val prefHelper: PrefHelper by lazy {
-        PrefHelper(requireContext())
+    protected val vm: MainViewModel by lazy {
+        val fa = ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
+        ViewModelProvider(requireActivity(), fa).get(MainViewModel::class.java)
     }
+
     protected val simpleAdapter = SimpleAdapter()
     private var lastClickedId = ""
     private var lastClickedTime = 0L
@@ -53,8 +57,7 @@ abstract class ListFragment(@LayoutRes layoutResId: Int) :
         actionMode.callback = object : ActionModeCallback {
             override fun onActionItemClick(item: MenuItem) {
                 if (item.itemId == R.id.action_delete) {
-                    simpleAdapter.deleteSelectedItem()
-                    saveList()
+                    vm.delete(simpleAdapter.getSelectedItem())
                 }
             }
 
@@ -64,5 +67,4 @@ abstract class ListFragment(@LayoutRes layoutResId: Int) :
         }
         simpleAdapter.selectItem(item)
     }
-
 }

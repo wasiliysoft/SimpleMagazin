@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin.ui
+package ru.wasiliysoft.simplemagazin.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -8,8 +8,8 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import ru.wasiliysoft.simplemagazin.R
-import ru.wasiliysoft.simplemagazin.ui.fragment.PendingListFragment
-import ru.wasiliysoft.simplemagazin.ui.fragment.SuccessListFragment
+import ru.wasiliysoft.simplemagazin.pending_list.PendingListFragment
+import ru.wasiliysoft.simplemagazin.success_list.SuccessListFragment
 
 class MainActivity : AppCompatActivity() {
 
