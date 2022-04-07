@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,35 +44,25 @@ class MainActivityCompose : ComponentActivity() {
 @Composable
 fun CombinedTab() {
     val tabData = listOf(
-        "MUSIC" to Icons.Filled.Home,
-        "MARKET" to Icons.Filled.ShoppingCart,
-        "FILMS" to Icons.Filled.AccountBox,
-        "BOOKS" to Icons.Filled.Settings,
+        "Купить" to Icons.Filled.ShoppingCart,
+        "Куплено" to Icons.Filled.Done,
     )
-    val pagerState = rememberPagerState(1)
+    val pagerState = rememberPagerState(0)
     val tabIndex = pagerState.currentPage
     val coroutineScope = rememberCoroutineScope()
     Column {
-        TabRow(
-            selectedTabIndex = tabIndex,
-            indicator = { tabPositions ->
-                TabRowDefaults.Indicator()
-            }
-        ) {
+        TabRow(selectedTabIndex = tabIndex) {
             tabData.forEachIndexed { index, pair ->
                 Tab(selected = tabIndex == index, onClick = {
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(index)
                     }
-                }, text = {
-                    Text(text = pair.first)
-                }, icon = {
-                    Icon(imageVector = pair.second, contentDescription = null)
-                })
+                }, text = { Text(text = pair.first) },
+                    icon = { Icon(imageVector = pair.second, contentDescription = null) })
             }
         }
         HorizontalPager(
-            count = 2,
+            count = tabData.size,
             state = pagerState,
             modifier = Modifier.weight(1f)
         ) { index ->
@@ -81,10 +71,16 @@ fun CombinedTab() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = tabData[index].first,
-                )
+                Text(text = tabData[index].first)
+                InputField()
             }
         }
     }
+}
+
+
+@Composable
+fun InputField() {
+    val input = remember { mutableStateOf("") }
+    TextField(value = input.value, onValueChange = { input.value = it })
 }
