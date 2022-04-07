@@ -4,4 +4,5 @@
     <string name="tab_pending">Buy</string>
     <string name="tab_success">Bought</string>
     <string name="new_item_hint">New position</string>
+    <string name="title_activity_main_compose">MainActivityCompose</string>
 </resources>
