@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin
+package ru.wasiliysoft.simplemagazin.abc_list
 
 import android.view.ActionMode
 import android.view.Menu

@@ -1,16 +1,25 @@
 package ru.wasiliysoft.simplemagazin.main
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-
 import androidx.lifecycle.LiveData
-
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import ru.wasiliysoft.simplemagazin.data.DAO
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
+    private var _enterSelectMode = mutableStateOf(false)
+    val isSelectMode = _enterSelectMode
+    fun enterSelectMode() {
+        _enterSelectMode.value = true
+    }
+
+    fun exitSelectMode() {
+        _enterSelectMode.value = false
+    }
+
     private val dao = DAO.getInstance(app.applicationContext)
     private val _list = MutableLiveData(dao.getList())
     val list: LiveData<List<SimpleItem>> = _list

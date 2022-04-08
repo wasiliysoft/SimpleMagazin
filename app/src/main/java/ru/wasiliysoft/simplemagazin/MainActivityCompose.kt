@@ -3,31 +3,26 @@ package ru.wasiliysoft.simplemagazin
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
-import ru.wasiliysoft.simplemagazin.data.SimpleItem
 import ru.wasiliysoft.simplemagazin.main.MainViewModel
-import ru.wasiliysoft.simplemagazin.pending_list.QueuneList
 import ru.wasiliysoft.simplemagazin.ui.theme.SimpleMagazinTheme
-import java.util.*
 
 class MainActivityCompose : ComponentActivity() {
     private val vm: MainViewModel by lazy {
@@ -43,11 +38,10 @@ class MainActivityCompose : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Scaffold(
                     topBar = {
-                        TopAppBar(
-                            title = {
-                                Text(text = "LayoutsCodelab")
-                            }
-                        )
+                        if (vm.isSelectMode.value) topAppBarActionMode(
+                            onCancel = { vm.exitSelectMode() },
+                            onDelete = { vm.exitSelectMode() }
+                        ) else topAppBar()
                     },
                     content = { CombinedTab(vm) },
                 )
@@ -71,9 +65,9 @@ class MainActivityCompose : ComponentActivity() {
                 count = tabData.size,
                 state = pagerState,
                 modifier = Modifier.weight(1f)
-            ) { index ->
-                println(index)
-                when (index) {
+            ) { tabIndex ->
+                println(tabIndex)
+                when (tabIndex) {
                     0 -> pendingFragment(model)
                     else -> succesedFragment(model)
                 }
@@ -82,32 +76,6 @@ class MainActivityCompose : ComponentActivity() {
     }
 }
 
-@Composable
-fun pendingFragment(model: MainViewModel) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val items: List<SimpleItem> by model.pendingList.observeAsState(listOf())
-        Surface(modifier = Modifier.weight(1f)) {
-            QueuneList(items) {
-                model.toSuccess(items[it])
-            }
-        }
-        InputField { model.addItem(SimpleItem(it, UUID.randomUUID().toString())) }
-    }
-}
-
-@Composable
-fun succesedFragment(model: MainViewModel) {
-    val items: List<SimpleItem> by model.successList.observeAsState(listOf())
-    Surface(modifier = Modifier.fillMaxSize()) {
-        QueuneList(items) {
-            model.toPending(items[it])
-        }
-    }
-}
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -130,22 +98,3 @@ fun TabsSimpleMagazin(tabData: List<Pair<String, ImageVector>>, pagerState: Page
     }
 }
 
-@Composable
-fun InputField(onSend: (text: String) -> Unit) {
-    var input by remember { mutableStateOf("") }
-    Row {
-        TextField(value = input, onValueChange = { input = it })
-        OutlinedButton(onClick = {
-            onSend(input)
-            input = ""
-        }) {
-            Text("OK")
-        }
-    }
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 320, heightDp = 320)
-fun InputFieldPreview() {
-    InputField() {}
-}
