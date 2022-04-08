@@ -12,29 +12,82 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import ru.wasiliysoft.simplemagazin.data.SimpleItem
+import ru.wasiliysoft.simplemagazin.main.MainViewModel
 import ru.wasiliysoft.simplemagazin.pending_list.QueuneList
 import ru.wasiliysoft.simplemagazin.ui.theme.SimpleMagazinTheme
+import java.util.*
 
 class MainActivityCompose : ComponentActivity() {
+    private val vm: MainViewModel by lazy {
+        val fa = ViewModelProvider.AndroidViewModelFactory(this.application)
+        ViewModelProvider(this, fa).get(MainViewModel::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             SimpleMagazinTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    CombinedTab()
-                }
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                                Text(text = "LayoutsCodelab")
+                            }
+                        )
+                    },
+                    content = { CombinedTab(vm) },
+                )
+            }
+        }
+    }
 
+
+    @OptIn(ExperimentalPagerApi::class)
+    @Composable
+    fun CombinedTab(model: MainViewModel) {
+        val tabData = listOf(
+            "Купить" to Icons.Filled.ShoppingCart,
+            "Куплено" to Icons.Filled.Done
+        )
+        val pagerState = rememberPagerState(0)
+
+        Column {
+            TabsSimpleMagazin(tabData, pagerState)
+            HorizontalPager(
+                count = tabData.size,
+                state = pagerState,
+                modifier = Modifier.weight(1f)
+            ) { index ->
+                println(index)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    val items: State<List<SimpleItem>> = when (index) {
+                        0 -> model.pendingList.observeAsState(listOf())
+                        else -> model.successList.observeAsState((listOf()))
+                    }
+                    QueuneList(items.value) {
+                        model.toSuccess(items.value[index])
+                    }
+                    InputField { model.addItem(SimpleItem(it, UUID.randomUUID().toString())) }
+                }
             }
         }
     }
@@ -42,48 +95,24 @@ class MainActivityCompose : ComponentActivity() {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CombinedTab() {
-    val tabData = listOf(
-        "Купить" to Icons.Filled.ShoppingCart,
-        "Куплено" to Icons.Filled.Done,
-        "Куплено" to Icons.Filled.Done,
-        "Куплено" to Icons.Filled.Done,
-        "Куплено" to Icons.Filled.Done,
-    )
-    val pagerState = rememberPagerState(0)
+fun TabsSimpleMagazin(tabData: List<Pair<String, ImageVector>>, pagerState: PagerState) {
     val tabIndex = pagerState.currentPage
     val coroutineScope = rememberCoroutineScope()
-
-    Column {
-        TabRow(selectedTabIndex = tabIndex) {
-            tabData.forEachIndexed { index, pair ->
-                Tab(selected = tabIndex == index, onClick = {
+    TabRow(selectedTabIndex = tabIndex) {
+        tabData.forEachIndexed { index, pair ->
+            Tab(
+                selected = tabIndex == index,
+                onClick = {
                     coroutineScope.launch {
                         pagerState.scrollToPage(index)
                     }
-                }, text = { Text(text = pair.first) },
-                    icon = { Icon(imageVector = pair.second, contentDescription = null) })
-            }
-        }
-        HorizontalPager(
-            count = tabData.size,
-            state = pagerState,
-            modifier = Modifier.weight(1f)
-        ) { index ->
-            println(index)
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val items = remember { mutableStateListOf<String>() }
-                QueuneList(items)
-                InputField { items.add(it) }
-            }
+                },
+                text = { Text(text = pair.first) },
+//                icon = { Icon(imageVector = pair.second, contentDescription = null) }
+            )
         }
     }
 }
-
 
 @Composable
 fun InputField(onSend: (text: String) -> Unit) {

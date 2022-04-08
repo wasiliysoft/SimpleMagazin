@@ -2,8 +2,11 @@ package ru.wasiliysoft.simplemagazin.main
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+
 import androidx.lifecycle.LiveData
+
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import ru.wasiliysoft.simplemagazin.data.DAO
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
 
@@ -11,6 +14,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val dao = DAO.getInstance(app.applicationContext)
     private val _list = MutableLiveData(dao.getList())
     val list: LiveData<List<SimpleItem>> = _list
+    val pendingList = Transformations.map(_list) { list ->
+        list.filter { !it.isSuccess }
+    }
+    val successList = Transformations.map(_list) { list ->
+        list.filter { it.isSuccess }
+    }
 
     fun addItem(simpleItem: SimpleItem) {
         dao.insert(simpleItem)
