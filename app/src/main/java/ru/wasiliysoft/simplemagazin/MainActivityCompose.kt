@@ -73,22 +73,38 @@ class MainActivityCompose : ComponentActivity() {
                 modifier = Modifier.weight(1f)
             ) { index ->
                 println(index)
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    val items: State<List<SimpleItem>> = when (index) {
-                        0 -> model.pendingList.observeAsState(listOf())
-                        else -> model.successList.observeAsState((listOf()))
-                    }
-                    QueuneList(items.value) {
-                        model.toSuccess(items.value[index])
-                    }
-                    InputField { model.addItem(SimpleItem(it, UUID.randomUUID().toString())) }
+                when (index) {
+                    0 -> pendingFragment(model)
+                    else -> succesedFragment(model)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun pendingFragment(model: MainViewModel) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val items: List<SimpleItem> by model.pendingList.observeAsState(listOf())
+        Surface(modifier = Modifier.weight(1f)) {
+            QueuneList(items) {
+                model.toSuccess(items[it])
+            }
+        }
+        InputField { model.addItem(SimpleItem(it, UUID.randomUUID().toString())) }
+    }
+}
+
+@Composable
+fun succesedFragment(model: MainViewModel) {
+    val items: List<SimpleItem> by model.successList.observeAsState(listOf())
+    Surface(modifier = Modifier.fillMaxSize()) {
+        QueuneList(items) {
+            model.toPending(items[it])
         }
     }
 }
