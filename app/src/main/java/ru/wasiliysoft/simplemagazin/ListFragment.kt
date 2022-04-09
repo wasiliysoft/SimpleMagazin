@@ -1,6 +1,5 @@
 package ru.wasiliysoft.simplemagazin
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,31 +9,71 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
 import ru.wasiliysoft.simplemagazin.main.MainViewModel
-import ru.wasiliysoft.simplemagazin.pending_list.QueuneList
 import java.util.*
 
 @Composable
 fun pendingFragment(model: MainViewModel) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val items: List<SimpleItem> by model.pendingList.observeAsState(listOf())
+    val cardCombinedClickableBehavior = object : CardCombinedClickable {
+        val isSelectedMode = model.isSelectMode.value
+        override fun onLongClick(item: SimpleItem) {
+            if (!isSelectedMode) {
+                model.enterSelectMode()
+            }
+        }
+
+        override fun onDoubleClick(item: SimpleItem) {
+            if (!isSelectedMode) {
+                model.toSuccess(item)
+            }
+        }
+
+        override fun onClick(item: SimpleItem) {
+            if (isSelectedMode) {
+                model.update(item.copy(selected = !item.selected))
+            }
+        }
+    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        val items by model.pendingList.observeAsState(initial = listOf())
         Surface(modifier = Modifier.weight(1f)) {
-            QueuneList(
-                list = items,
-                onClick = { pos -> model.toSuccess(items[pos]) },
-                onLongClick = { model.enterSelectMode() })
+            CardList(list = items, cardCombinedClickable = cardCombinedClickableBehavior)
         }
         InputField { model.addItem(SimpleItem(it, UUID.randomUUID().toString())) }
     }
 }
+
+@Composable
+fun succesedFragment(model: MainViewModel) {
+    val cardCombinedClickableBehavior = object : CardCombinedClickable {
+        val isSelectedMode = model.isSelectMode.value
+        override fun onLongClick(item: SimpleItem) {
+            if (!isSelectedMode) {
+                model.enterSelectMode()
+            }
+        }
+
+        override fun onDoubleClick(item: SimpleItem) {
+            if (!isSelectedMode) {
+                model.toPending(item)
+            }
+        }
+
+        override fun onClick(item: SimpleItem) {
+            if (isSelectedMode) {
+                model.update(item.copy(selected = !item.selected))
+            }
+        }
+    }
+    val items by model.successList.observeAsState(initial = listOf())
+    Surface(modifier = Modifier.fillMaxSize()) {
+        CardList(list = items, cardCombinedClickable = cardCombinedClickableBehavior)
+    }
+}
+
 
 @Composable
 fun InputField(onSend: (text: String) -> Unit) {
@@ -58,15 +97,4 @@ fun InputField(onSend: (text: String) -> Unit) {
 @Preview(showBackground = true, widthDp = 320, heightDp = 320)
 fun InputFieldPreview() {
     InputField() {}
-}
-
-@Composable
-fun succesedFragment(model: MainViewModel) {
-    val items: List<SimpleItem> by model.successList.observeAsState(listOf())
-    Surface(modifier = Modifier.fillMaxSize()) {
-        QueuneList(
-            list = items,
-            onClick = { model.toPending(items[it]) },
-            onLongClick = { model.enterSelectMode() })
-    }
 }
