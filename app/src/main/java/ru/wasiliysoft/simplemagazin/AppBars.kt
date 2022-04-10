@@ -2,8 +2,8 @@ package ru.wasiliysoft.simplemagazin
 
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 
@@ -18,17 +18,17 @@ fun topAppBarActionMode(
     onDelete: () -> Unit,
 ) {
     TopAppBar(
+        title = { Text("") },
         elevation = 0.dp,
         backgroundColor = MaterialTheme.colors.primaryVariant,
-        title = { Text(text = "LayoutsCodelab") },
         navigationIcon = {
             IconButton(onClick = onCancel) {
-                Icon(Icons.Filled.Close, null)
+                Icon(Icons.Filled.ArrowBack, null)
             }
         },
         actions = {
             IconButton(onClick = onDelete) {
-                Icon(Icons.Filled.Done, null)
+                Icon(Icons.Filled.Delete, null)
             }
         })
 }
