@@ -1,5 +1,6 @@
 package ru.wasiliysoft.simplemagazin
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.defaultMinSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
@@ -39,17 +41,19 @@ fun CardList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun itemCard(item: SimpleItem, cardCombinedClickable: CardCombinedClickable) {
-    Card(backgroundColor = if (item.selected) MaterialTheme.colors.primaryVariant
-    else MaterialTheme.colors.background,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .defaultMinSize(minHeight = 48.dp)
-            .combinedClickable(
-                onClick = { cardCombinedClickable.onClick(item) },
-                onDoubleClick = { cardCombinedClickable.onDoubleClick(item) },
-                onLongClick = { cardCombinedClickable.onLongClick(item) }
-            )
+    val color by animateColorAsState(
+        targetValue = if (item.selected) MaterialTheme.colors.primaryVariant
+        else MaterialTheme.colors.background
+    )
+    Card(backgroundColor = color, modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+        .defaultMinSize(minHeight = 48.dp)
+        .combinedClickable(
+            onClick = { cardCombinedClickable.onClick(item) },
+            onDoubleClick = { cardCombinedClickable.onDoubleClick(item) },
+            onLongClick = { cardCombinedClickable.onLongClick(item) }
+        )
     ) {
         Text(item.title, modifier = Modifier.padding(8.dp))
     }
