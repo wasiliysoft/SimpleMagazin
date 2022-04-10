@@ -3,17 +3,26 @@ package ru.wasiliysoft.simplemagazin
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
 import ru.wasiliysoft.simplemagazin.main.MainViewModel
-import java.util.*
 
 @Composable
 fun pendingFragment(model: MainViewModel) {
@@ -42,9 +51,10 @@ fun pendingFragment(model: MainViewModel) {
         Surface(modifier = Modifier.weight(1f)) {
             CardList(list = items, cardCombinedClickable = cardCombinedClickableBehavior)
         }
-        InputField { model.addItem(SimpleItem(it, UUID.randomUUID().toString())) }
+        ItemInput(onItemComplete = model::addItem)
     }
 }
+
 
 @Composable
 fun succesedFragment(model: MainViewModel) {
@@ -74,27 +84,55 @@ fun succesedFragment(model: MainViewModel) {
     }
 }
 
-
 @Composable
-fun InputField(onSend: (text: String) -> Unit) {
-    var input by remember { mutableStateOf("") }
+fun ItemInput(onItemComplete: (item: SimpleItem) -> Unit) {
+    val (text, setText) = remember { mutableStateOf("") }
+    val submit = {
+        onItemComplete(SimpleItem(text))
+        setText("")
+    }
     Row {
-        TextField(
-            value = input,
-            onValueChange = { input = it },
-            modifier = Modifier.weight(1f)
+        InputText(
+            text = text, onTextChange = setText, modifier = Modifier
+                .weight(1f)
+                .padding(8.dp),
+            onImeAction = submit
         )
-        OutlinedButton(onClick = {
-            onSend(input)
-            input = ""
-        }) {
-            Text("OK")
-        }
+        AddItemButton(
+            onClick = submit,
+            text = "OK",
+            enabled = text.isNotBlank(),
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-@Preview(showBackground = true, widthDp = 320, heightDp = 320)
-fun InputFieldPreview() {
-    InputField() {}
+fun InputText(
+    text: String,
+    onTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onImeAction: () -> Unit = {}
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    TextField(
+        value = text,
+        onValueChange = onTextChange,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+            onImeAction()
+            keyboardController?.hide()
+        }),
+        modifier = modifier
+    )
+}
+
+@Composable
+fun AddItemButton(onClick: () -> Unit, text: String, enabled: Boolean, modifier: Modifier) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled
+    ) { Text(text) }
 }
