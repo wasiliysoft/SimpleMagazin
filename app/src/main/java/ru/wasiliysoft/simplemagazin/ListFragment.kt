@@ -49,7 +49,11 @@ fun pendingFragment(model: MainViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         val items by model.pendingList.observeAsState(initial = listOf())
         Surface(modifier = Modifier.weight(1f)) {
-            CardList(list = items, cardCombinedClickable = cardCombinedClickableBehavior)
+            CardList(
+                list = items,
+                cardCombinedClickable = cardCombinedClickableBehavior,
+                selectableMode = model.isSelectMode.value
+            )
         }
         ItemInput(onItemComplete = model::addItem)
     }
@@ -80,7 +84,11 @@ fun succesedFragment(model: MainViewModel) {
     }
     val items by model.successList.observeAsState(initial = listOf())
     Surface(modifier = Modifier.fillMaxSize()) {
-        CardList(list = items, cardCombinedClickable = cardCombinedClickableBehavior)
+        CardList(
+            list = items,
+            cardCombinedClickable = cardCombinedClickableBehavior,
+            selectableMode = model.isSelectMode.value
+        )
     }
 }
 

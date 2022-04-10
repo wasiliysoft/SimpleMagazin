@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,14 +26,20 @@ interface CardCombinedClickable {
 @Composable
 fun CardList(
     list: List<SimpleItem>,
-    cardCombinedClickable: CardCombinedClickable
+    cardCombinedClickable: CardCombinedClickable,
+    selectableMode: Boolean
+
 ) {
     val scrollState = rememberLazyListState()
     LazyColumn(state = scrollState) {
         items(count = list.size) {
             val pos = it
             Surface(modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)) {
-                itemCard(item = list[pos], cardCombinedClickable = cardCombinedClickable)
+                itemCard(
+                    item = list[pos],
+                    cardCombinedClickable = cardCombinedClickable,
+                    selectableMode = selectableMode
+                )
             }
         }
     }
@@ -40,21 +47,32 @@ fun CardList(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun itemCard(item: SimpleItem, cardCombinedClickable: CardCombinedClickable) {
+fun itemCard(
+    item: SimpleItem,
+    cardCombinedClickable: CardCombinedClickable,
+    selectableMode: Boolean
+) {
     val color by animateColorAsState(
         targetValue = if (item.selected) MaterialTheme.colors.primaryVariant
         else MaterialTheme.colors.background
     )
-    Card(backgroundColor = color, modifier = Modifier
+    var modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)
         .defaultMinSize(minHeight = 48.dp)
-        .combinedClickable(
-            onClick = { cardCombinedClickable.onClick(item) },
+    modifier = if (selectableMode) {
+        modifier.selectable(selected = item.selected) {
+            println("onClick in selectable")
+            cardCombinedClickable.onClick(item)
+        }
+    } else {
+        modifier.combinedClickable(
+            onClick = { println("onClick in combinedClickable") },
             onDoubleClick = { cardCombinedClickable.onDoubleClick(item) },
             onLongClick = { cardCombinedClickable.onLongClick(item) }
         )
-    ) {
+    }
+    Card(backgroundColor = color, modifier = modifier) {
         Text(item.title, modifier = Modifier.padding(8.dp))
     }
 }
