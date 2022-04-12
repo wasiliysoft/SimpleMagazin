@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -26,8 +25,8 @@ import ru.wasiliysoft.simplemagazin.main.MainViewModel
 
 @Composable
 fun pendingFragment(model: MainViewModel) {
+    val isSelectedMode = model.isSelectMode.value
     val cardCombinedClickableBehavior = object : CardCombinedClickable {
-        val isSelectedMode = model.isSelectMode.value
         override fun onLongClick(item: SimpleItem) {
             if (!isSelectedMode) {
                 model.enterSelectMode()
@@ -46,13 +45,13 @@ fun pendingFragment(model: MainViewModel) {
             }
         }
     }
+    val items by model.pendingList.observeAsState(initial = listOf())
     Column(modifier = Modifier.fillMaxSize()) {
-        val items by model.pendingList.observeAsState(initial = listOf())
-        Surface(modifier = Modifier.weight(1f)) {
+        Row(modifier = Modifier.weight(1.0f)) {
             CardList(
                 list = items,
                 cardCombinedClickable = cardCombinedClickableBehavior,
-                selectableMode = model.isSelectMode.value
+                selectableMode = isSelectedMode,
             )
         }
         ItemInput(onItemComplete = model::addItem)
@@ -62,8 +61,9 @@ fun pendingFragment(model: MainViewModel) {
 
 @Composable
 fun succesedFragment(model: MainViewModel) {
+    val isSelectedMode = model.isSelectMode.value
+
     val cardCombinedClickableBehavior = object : CardCombinedClickable {
-        val isSelectedMode = model.isSelectMode.value
         override fun onLongClick(item: SimpleItem) {
             if (!isSelectedMode) {
                 model.enterSelectMode()
@@ -83,12 +83,14 @@ fun succesedFragment(model: MainViewModel) {
         }
     }
     val items by model.successList.observeAsState(initial = listOf())
-    Surface(modifier = Modifier.fillMaxSize()) {
-        CardList(
-            list = items,
-            cardCombinedClickable = cardCombinedClickableBehavior,
-            selectableMode = model.isSelectMode.value
-        )
+    Column() {
+        Row(Modifier.weight(1.0f)) {
+            CardList(
+                list = items,
+                cardCombinedClickable = cardCombinedClickableBehavior,
+                selectableMode = isSelectedMode
+            )
+        }
     }
 }
 

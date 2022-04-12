@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -67,18 +68,19 @@ class MainActivityCompose : ComponentActivity() {
             "Куплено" to Icons.Filled.Done
         )
         val pagerState = rememberPagerState(0)
-
         Column {
             TabsSimpleMagazin(tabData, pagerState)
-            HorizontalPager(
-                count = tabData.size,
-                state = pagerState,
-                modifier = Modifier.weight(1f)
-            ) { tabIndex ->
-                println(tabIndex)
-                when (tabIndex) {
-                    0 -> pendingFragment(model)
-                    else -> succesedFragment(model)
+            Surface(modifier = Modifier.fillMaxSize()) {
+                HorizontalPager(
+                    count = tabData.size,
+                    state = pagerState,
+                    modifier = Modifier.weight(1f)
+                ) { tabIndex ->
+                    println(tabIndex)
+                    when (tabIndex) {
+                        0 -> pendingFragment(model)
+                        else -> succesedFragment(model)
+                    }
                 }
             }
         }
