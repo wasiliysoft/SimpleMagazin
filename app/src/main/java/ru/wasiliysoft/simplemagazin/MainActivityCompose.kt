@@ -40,7 +40,7 @@ class MainActivityCompose : ComponentActivity() {
                     topBar = {
                         if (vm.isSelectMode.value) topAppBarActionMode(
                             onCancel = { vm.exitSelectMode() },
-                            onDelete = { vm.exitSelectMode() }
+                            onDelete = { vm.deleteSelectedItems() }
                         ) else topAppBar()
                     },
                     content = { CombinedTab(vm) },

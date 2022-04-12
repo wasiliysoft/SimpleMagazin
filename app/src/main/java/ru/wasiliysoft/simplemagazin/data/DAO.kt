@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class DAO private constructor(context: Context) {
 
@@ -25,7 +27,7 @@ class DAO private constructor(context: Context) {
     private val _list = getList().toMutableList()
     val list = MutableLiveData(_list)
 
-    private fun notifyDataSetChanged() {
+    private suspend fun notifyDataSetChanged() = withContext(Dispatchers.Main) {
         list.value = _list
     }
 
@@ -40,22 +42,22 @@ class DAO private constructor(context: Context) {
         }
     }
 
-    private fun commit(newList: List<SimpleItem>) {
+    private suspend fun commit(newList: List<SimpleItem>) = withContext(Dispatchers.IO) {
         notifyDataSetChanged()
         sp.edit().putString(PREF_JSON_LIST, Gson().toJson(newList)).apply()
     }
 
-    fun insert(simpleItem: SimpleItem) {
+    suspend fun insert(simpleItem: SimpleItem) {
         _list.add(simpleItem)
         commit(_list)
     }
 
-    fun delete(item: SimpleItem) {
-        _list.remove(item)
+    suspend fun delete(list: List<SimpleItem>) {
+        _list.removeAll(list)
         commit(_list)
     }
 
-    fun update(item: SimpleItem) {
+    suspend fun update(item: SimpleItem) {
         val oldItem = _list.find { it.id == item.id } ?: return
         val pos = _list.indexOf(oldItem)
         if (pos > -1) {
@@ -64,11 +66,11 @@ class DAO private constructor(context: Context) {
         }
     }
 
-    fun toPending(simpleItem: SimpleItem) {
+    suspend fun toPending(simpleItem: SimpleItem) {
         update(simpleItem.copy(isSuccess = false))
     }
 
-    fun toSuccess(simpleItem: SimpleItem) {
+    suspend fun toSuccess(simpleItem: SimpleItem) {
         update(simpleItem.copy(isSuccess = true))
     }
 }
