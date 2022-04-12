@@ -25,12 +25,20 @@ fun topAppBarActionMode(
         backgroundColor = MaterialTheme.colors.primaryVariant,
         navigationIcon = {
             IconButton(onClick = onCancel) {
-                Icon(Icons.Filled.ArrowBack, null)
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    tint = MaterialTheme.colors.onPrimary,
+                    contentDescription = null
+                )
             }
         },
         actions = {
             IconButton(onClick = onDelete) {
-                Icon(Icons.Filled.Delete, null)
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onPrimary,
+                )
             }
         })
 }

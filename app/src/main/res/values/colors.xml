@@ -7,6 +7,5 @@
 
     <color name="cardBackground">#FFFFFF</color>
     <color name="activityBackground">#eceff1</color>
-    <color name="inputBackground">#cfd8dc</color>
 
 </resources>
