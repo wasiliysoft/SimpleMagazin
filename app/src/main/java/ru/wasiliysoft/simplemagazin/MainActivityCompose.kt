@@ -4,15 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModelProvider
@@ -35,16 +31,29 @@ class MainActivityCompose : ComponentActivity() {
 
         setContent {
             SimpleMagazinTheme {
+                var confirmDialogIsShow by remember { mutableStateOf(false) }
                 // A surface container using the 'background' color from the theme
                 Scaffold(
                     topBar = {
                         if (vm.isSelectMode.value) topAppBarActionMode(
                             onCancel = { vm.exitSelectMode() },
-                            onDelete = { vm.deleteSelectedItems() }
+                            onDelete = { confirmDialogIsShow = true }
                         ) else topAppBar()
                     },
                     content = { CombinedTab(vm) },
                 )
+                if (confirmDialogIsShow) {
+                    val onDismissRequest = { confirmDialogIsShow = false }
+                    val onConfirm = {
+                        vm.deleteSelectedItems()
+                        onDismissRequest()
+                    }
+                    ConfirmDeleteDialog(
+                        onDismissRequest = onDismissRequest,
+                        selectedItemsCount = vm.list.value?.filter { it.selected }?.size ?: 0,
+                        onConfirm = onConfirm
+                    )
+                }
             }
         }
     }
@@ -76,6 +85,23 @@ class MainActivityCompose : ComponentActivity() {
     }
 }
 
+@Composable
+fun ConfirmDeleteDialog(
+    onDismissRequest: () -> Unit,
+    selectedItemsCount: Int,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Confirm") },
+        text = { Text("Delete $selectedItemsCount selected items?") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("DELETE")
+            }
+        }
+    )
+}
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
