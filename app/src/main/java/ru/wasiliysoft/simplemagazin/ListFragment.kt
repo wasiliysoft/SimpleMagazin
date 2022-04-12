@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -17,7 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
@@ -54,7 +54,9 @@ fun pendingFragment(model: MainViewModel) {
                 selectableMode = isSelectedMode,
             )
         }
-        ItemInput(onItemComplete = model::addItem)
+        Surface(elevation = 4.dp) {
+            ItemInput(onItemComplete = model::addItem)
+        }
     }
 }
 
@@ -101,20 +103,23 @@ fun ItemInput(onItemComplete: (item: SimpleItem) -> Unit) {
         onItemComplete(SimpleItem(text))
         setText("")
     }
-    Row {
+    Row(Modifier.padding(8.dp)) {
         InputText(
-            text = text, onTextChange = setText, modifier = Modifier
-                .weight(1f)
-                .padding(8.dp),
+            text = text,
+            onTextChange = setText,
+            modifier = Modifier
+                .weight(1.0f)
+                .padding(4.dp),
             onImeAction = submit
         )
-        AddItemButton(
+        TextButton(
             onClick = submit,
-            text = "OK",
+            modifier = Modifier.align(Alignment.CenterVertically),
             enabled = text.isNotBlank(),
-            modifier = Modifier.align(Alignment.CenterVertically)
+            content = { Text(text = "OK") }
         )
     }
+
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -134,15 +139,8 @@ fun InputText(
             onImeAction()
             keyboardController?.hide()
         }),
-        modifier = modifier
-    )
-}
-
-@Composable
-fun AddItemButton(onClick: () -> Unit, text: String, enabled: Boolean, modifier: Modifier) {
-    OutlinedButton(
-        onClick = onClick,
+        placeholder = { Text(stringResource(id = R.string.new_item_hint)) },
         modifier = modifier,
-        enabled = enabled
-    ) { Text(text) }
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent)
+    )
 }
