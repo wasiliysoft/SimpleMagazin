@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -64,8 +65,8 @@ class MainActivityCompose : ComponentActivity() {
     @Composable
     fun CombinedTab(model: MainViewModel) {
         val tabData = listOf(
-            "Купить" to Icons.Filled.ShoppingCart,
-            "Куплено" to Icons.Filled.Done
+            stringResource(id = R.string.tab_pending).uppercase() to Icons.Filled.ShoppingCart,
+            stringResource(id = R.string.tab_success).uppercase() to Icons.Filled.Done
         )
         val pagerState = rememberPagerState(0)
         Column {
@@ -76,10 +77,13 @@ class MainActivityCompose : ComponentActivity() {
                     state = pagerState,
                     modifier = Modifier.weight(1f)
                 ) { tabIndex ->
-                    println(tabIndex)
-                    when (tabIndex) {
-                        0 -> pendingFragment(model)
-                        else -> succesedFragment(model)
+                    when (tabData[tabIndex].first.lowercase()) {
+                        stringResource(id = R.string.tab_pending).lowercase() -> pendingFragment(
+                            model
+                        )
+                        stringResource(id = R.string.tab_success).lowercase() -> succesedFragment(
+                            model
+                        )
                     }
                 }
             }
@@ -110,16 +114,17 @@ fun ConfirmDeleteDialog(
 fun TabsSimpleMagazin(tabData: List<Pair<String, ImageVector>>, pagerState: PagerState) {
     val tabIndex = pagerState.currentPage
     val coroutineScope = rememberCoroutineScope()
-    TabRow(selectedTabIndex = tabIndex) {
+    TabRow(selectedTabIndex = tabIndex, backgroundColor = MaterialTheme.colors.surface) {
         tabData.forEachIndexed { index, pair ->
             Tab(
                 selected = tabIndex == index,
                 onClick = {
                     coroutineScope.launch {
-                        pagerState.scrollToPage(index)
+                        pagerState.animateScrollToPage(index)
                     }
                 },
                 text = { Text(text = pair.first) },
+
 //                icon = { Icon(imageVector = pair.second, contentDescription = null) }
             )
         }

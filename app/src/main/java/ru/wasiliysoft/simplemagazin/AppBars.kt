@@ -5,11 +5,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun topAppBar() {
-    TopAppBar(title = { Text(text = "LayoutsCodelab") }, elevation = 0.dp)
+    TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) }, elevation = 0.dp)
 }
 
 @Composable
