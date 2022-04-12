@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin
+package ru.wasiliysoft.simplemagazin.ui.view
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi

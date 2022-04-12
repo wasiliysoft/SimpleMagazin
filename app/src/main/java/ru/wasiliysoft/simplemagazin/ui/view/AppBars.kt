@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin
+package ru.wasiliysoft.simplemagazin.ui.view
 
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ru.wasiliysoft.simplemagazin.R
 
 @Composable
 fun topAppBar() {

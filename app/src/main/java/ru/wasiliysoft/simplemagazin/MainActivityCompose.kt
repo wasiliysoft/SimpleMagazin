@@ -17,6 +17,10 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import ru.wasiliysoft.simplemagazin.main.MainViewModel
 import ru.wasiliysoft.simplemagazin.ui.theme.SimpleMagazinTheme
+import ru.wasiliysoft.simplemagazin.ui.view.pendingFragment
+import ru.wasiliysoft.simplemagazin.ui.view.succesedFragment
+import ru.wasiliysoft.simplemagazin.ui.view.topAppBar
+import ru.wasiliysoft.simplemagazin.ui.view.topAppBarActionMode
 
 class MainActivityCompose : ComponentActivity() {
     private val vm: MainViewModel by lazy {

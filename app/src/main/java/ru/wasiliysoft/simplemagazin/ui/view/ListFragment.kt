@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin
+package ru.wasiliysoft.simplemagazin.ui.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import ru.wasiliysoft.simplemagazin.R
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
 import ru.wasiliysoft.simplemagazin.main.MainViewModel
 
