@@ -17,7 +17,15 @@ import ru.wasiliysoft.simplemagazin.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar() {
-    TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) })
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(id = R.string.app_name),
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,12 +36,16 @@ fun TopAppBarActionMode(
 ) {
     TopAppBar(
         title = { Text("") },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            navigationIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            actionIconContentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        ),
         navigationIcon = {
             IconButton(onClick = onCancel) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = null
                 )
             }
@@ -43,7 +55,6 @@ fun TopAppBarActionMode(
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         })

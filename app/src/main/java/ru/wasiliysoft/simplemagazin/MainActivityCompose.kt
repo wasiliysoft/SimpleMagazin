@@ -131,7 +131,10 @@ fun TabBar(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val activeTabIndex = pagerState.currentPage
-    TabRow(selectedTabIndex = activeTabIndex, containerColor = MaterialTheme.colorScheme.surface) {
+    TabRow(
+        selectedTabIndex = activeTabIndex,
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+    ) {
         tabTitles.forEachIndexed { index, tabTitle ->
             Tab(
                 selected = activeTabIndex == index,
