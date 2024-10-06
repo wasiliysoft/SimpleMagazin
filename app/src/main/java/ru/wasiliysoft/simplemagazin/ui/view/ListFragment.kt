@@ -7,10 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -58,7 +60,7 @@ fun PendingFragment(model: MainViewModel) {
                 modifier = Modifier.fillMaxSize()
             )
         }
-        Surface(color = MaterialTheme.colorScheme.secondaryContainer) {
+        Surface(color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)) {
             ItemInput(onItemComplete = model::addItem)
         }
     }
@@ -104,18 +106,18 @@ fun ItemInput(onItemComplete: (item: SimpleItem) -> Unit) {
         onItemComplete(SimpleItem(text))
         setText("")
     }
-    Row(Modifier.padding(8.dp)) {
+    Row(Modifier.padding(0.dp)) {
         InputText(
             text = text,
             onTextChange = setText,
-            modifier = Modifier
-                .weight(1.0f)
-                .padding(4.dp),
+            modifier = Modifier.weight(1.0f),
             onImeAction = submit,
         )
         TextButton(
             onClick = submit,
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(4.dp),
             enabled = text.isNotBlank(),
             content = { Text(text = "OK") }
         )
@@ -132,7 +134,7 @@ fun InputText(
     onImeAction: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    OutlinedTextField(
+    TextField(
         value = text,
         onValueChange = onTextChange,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
@@ -140,6 +142,12 @@ fun InputText(
             onImeAction()
             keyboardController?.hide()
         }),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
         placeholder = { Text(stringResource(id = R.string.new_item_hint)) },
         modifier = modifier,
     )
