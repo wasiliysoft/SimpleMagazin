@@ -50,11 +50,12 @@ fun PendingFragment(model: MainViewModel) {
     }
     val items by model.pendingList.observeAsState(initial = listOf())
     Column(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.weight(1.0f)) {
+        Column(modifier = Modifier.weight(1.0f)) {
             CardList(
                 list = items,
                 cardCombinedClickable = cardCombinedClickableBehavior,
                 selectableMode = isSelectedMode,
+                modifier = Modifier.fillMaxSize()
             )
         }
         Surface(color = MaterialTheme.colorScheme.secondaryContainer) {
@@ -65,7 +66,7 @@ fun PendingFragment(model: MainViewModel) {
 
 
 @Composable
-fun SuccesedFragment(model: MainViewModel) {
+fun SuccessedFragment(model: MainViewModel) {
     val isSelectedMode = model.isSelectMode.value
 
     val cardCombinedClickableBehavior = object : CardCombinedClickable {
@@ -88,15 +89,12 @@ fun SuccesedFragment(model: MainViewModel) {
         }
     }
     val items by model.successList.observeAsState(initial = listOf())
-    Column() {
-        Row(Modifier.weight(1.0f)) {
-            CardList(
-                list = items,
-                cardCombinedClickable = cardCombinedClickableBehavior,
-                selectableMode = isSelectedMode
-            )
-        }
-    }
+    CardList(
+        list = items,
+        cardCombinedClickable = cardCombinedClickableBehavior,
+        selectableMode = isSelectedMode,
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 @Composable

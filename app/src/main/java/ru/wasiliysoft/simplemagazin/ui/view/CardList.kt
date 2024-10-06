@@ -29,10 +29,11 @@ interface CardCombinedClickable {
 fun CardList(
     list: List<SimpleItem>,
     cardCombinedClickable: CardCombinedClickable,
-    selectableMode: Boolean
+    selectableMode: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberLazyListState()
-    LazyColumn(state = scrollState) {
+    LazyColumn(state = scrollState, modifier = modifier) {
         items(count = list.size, key = { list[it].id }) {
             val pos = it
             ItemCard(

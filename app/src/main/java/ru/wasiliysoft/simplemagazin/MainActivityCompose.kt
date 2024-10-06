@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 import ru.wasiliysoft.simplemagazin.main.MainViewModel
 import ru.wasiliysoft.simplemagazin.ui.theme.AppTheme
 import ru.wasiliysoft.simplemagazin.ui.view.PendingFragment
-import ru.wasiliysoft.simplemagazin.ui.view.SuccesedFragment
+import ru.wasiliysoft.simplemagazin.ui.view.SuccessedFragment
 import ru.wasiliysoft.simplemagazin.ui.view.TopAppBar
 import ru.wasiliysoft.simplemagazin.ui.view.TopAppBarActionMode
 
@@ -95,7 +95,7 @@ class MainActivityCompose : ComponentActivity() {
                             model
                         )
 
-                        stringResource(id = R.string.tab_success).uppercase() -> SuccesedFragment(
+                        stringResource(id = R.string.tab_success).uppercase() -> SuccessedFragment(
                             model
                         )
                     }
