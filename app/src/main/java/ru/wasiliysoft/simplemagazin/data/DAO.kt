@@ -61,7 +61,9 @@ class DAO private constructor(context: Context) {
         val oldItem = _list.find { it.id == item.id } ?: return
         val pos = _list.indexOf(oldItem)
         if (pos > -1) {
-            _list[pos] = item
+            // _list[pos] = item
+            _list.removeAt(pos)
+            _list.add(item)
             commit(_list)
         }
     }
