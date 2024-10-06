@@ -3,6 +3,8 @@ package ru.wasiliysoft.simplemagazin.ui.view
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,7 +35,11 @@ fun CardList(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberLazyListState()
-    LazyColumn(state = scrollState, modifier = modifier) {
+    LazyColumn(
+        state = scrollState, modifier = modifier,
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         items(count = list.size, key = { list[it].id }) {
             val pos = it
             ItemCard(
@@ -61,7 +67,6 @@ fun ItemCard(
     )
     var m = modifier
         .fillMaxWidth()
-        .padding(8.dp)
         .defaultMinSize(minHeight = 48.dp)
     m = if (selectableMode) {
         m.selectable(selected = item.selected) {
