@@ -5,4 +5,6 @@
     <string name="tab_pending">Купить</string>
     <string name="tab_success">Куплено</string>
     <string name="new_item_hint">Новая позиция</string>
+    <string name="confirmation">Подтверждение</string>
+    <string name="delete_selected_items_question">Удалить все выделенные элементы?</string>
 </resources>

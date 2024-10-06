@@ -46,7 +46,7 @@ class MainActivityCompose : ComponentActivity() {
         setContent {
             AppTheme {
                 var confirmDialogIsShow by remember { mutableStateOf(false) }
-                // A surface container using the 'background' color from the theme
+
                 Scaffold(
                     topBar = {
                         if (vm.isSelectMode.value) TopAppBarActionMode(
@@ -55,41 +55,45 @@ class MainActivityCompose : ComponentActivity() {
                         ) else TopAppBar()
                     },
                     content = {
-                        CombinedTab(vm, modifier = Modifier.padding(it))
+                        val tabData = vm.tabList.map { resId -> stringResource(resId).uppercase() }
+                        val pagerState = rememberPagerState(pageCount = { tabData.size })
+                        CombinedTab(
+                            tabData = tabData,
+                            pagerState = pagerState,
+                            model = vm,
+                            modifier = Modifier.padding(it)
+                        )
+
+                        if (confirmDialogIsShow) {
+                            val onDismissRequest = { confirmDialogIsShow = false }
+                            val onConfirm = {
+                                vm.deleteSelectedItems(pagerState)
+                                onDismissRequest()
+                            }
+                            ConfirmDeleteDialog(
+                                onDismissRequest = onDismissRequest,
+                                onConfirm = onConfirm
+                            )
+                        }
                     },
                 )
-                if (confirmDialogIsShow) {
-                    val onDismissRequest = { confirmDialogIsShow = false }
-                    val onConfirm = {
-                        vm.deleteSelectedItems()
-                        onDismissRequest()
-                    }
-                    ConfirmDeleteDialog(
-                        onDismissRequest = onDismissRequest,
-                        selectedItemsCount = vm.list.value?.filter { it.selected }?.size ?: 0,
-                        onConfirm = onConfirm
-                    )
-                }
+
             }
         }
     }
 
 
     @Composable
-    fun CombinedTab(model: MainViewModel, modifier: Modifier = Modifier) {
-        val tabData = listOf(
-            stringResource(id = R.string.tab_pending),
-            stringResource(id = R.string.tab_success)
-        ).map { it.uppercase() }
-
-        val pagerState = rememberPagerState(pageCount = { tabData.size })
+    fun CombinedTab(
+        tabData: List<String>,
+        pagerState: PagerState,
+        model: MainViewModel,
+        modifier: Modifier = Modifier
+    ) {
         Column(modifier = modifier) {
             TabBar(tabTitles = tabData, pagerState = pagerState)
             Surface(modifier = Modifier.fillMaxSize()) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.weight(1f)
-                ) { tabIndex ->
+                HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { tabIndex ->
                     when (tabData[tabIndex].uppercase()) {
                         stringResource(id = R.string.tab_pending).uppercase() -> PendingFragment(
                             model
@@ -109,16 +113,15 @@ class MainActivityCompose : ComponentActivity() {
 @Composable
 fun ConfirmDeleteDialog(
     onDismissRequest: () -> Unit,
-    selectedItemsCount: Int,
     onConfirm: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Confirm") },
-        text = { Text("Delete $selectedItemsCount selected items?") },
+        title = { Text(stringResource(R.string.confirmation)) },
+        text = { Text(stringResource(R.string.delete_selected_items_question)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("DELETE")
+                Text(stringResource(android.R.string.ok))
             }
         }
     )
