@@ -1,10 +1,11 @@
 package ru.wasiliysoft.simplemagazin.data
 
-import java.util.*
+import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 data class SimpleItem(
-    val title: String,
-    val id: String = UUID.randomUUID().toString(),
-    val selected: Boolean = false,
-    val isSuccess: Boolean = false
+    @SerializedName("title") val title: String,
+    @SerializedName("id") val id: String = UUID.randomUUID().toString(),
+    @SerializedName("selected") val selected: Boolean = false,
+    @SerializedName("isSuccess") val isSuccess: Boolean = false
 )

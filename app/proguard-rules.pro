@@ -1,22 +1,26 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Save annotation SerializedName
+# https://r8.googlesource.com/r8/+/refs/heads/master/compatibility-faq.md
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# GSON uses type tokens to serialize and deserialize generic types.
+# # https://r8.googlesource.com/r8/+/refs/heads/master/compatibility-faq.md
+-keepattributes Signature
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Kotlin suspend functions and generic signatures
+# # https://r8.googlesource.com/r8/+/refs/heads/master/compatibility-faq.md
+-keepattributes Signature
+-keep class kotlin.coroutines.Continuation
+
+-assumenosideeffects
+class android.util.Log {
+    #public static *** e(...);
+    public static *** d(...);
+    #public static *** i(...);
+    #public static *** v(...);
+}
 -dontobfuscate
