@@ -5,8 +5,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,22 +34,29 @@ fun CardList(
     list: List<SimpleItem>,
     cardCombinedClickable: CardCombinedClickable,
     selectableMode: Boolean,
+    verticalArrangement: Arrangement.Vertical,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberLazyListState()
     LazyColumn(
         state = scrollState, modifier = modifier,
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = verticalArrangement
     ) {
         items(count = list.size, key = { list[it].id }) {
             val pos = it
+            if (verticalArrangement == Arrangement.Bottom) {
+                Spacer(Modifier.height(16.dp))
+            }
             ItemCard(
                 item = list[pos],
                 cardCombinedClickable = cardCombinedClickable,
                 selectableMode = selectableMode,
                 modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
             )
+            if (verticalArrangement == Arrangement.Top) {
+                Spacer(Modifier.height(16.dp))
+            }
         }
     }
 }
