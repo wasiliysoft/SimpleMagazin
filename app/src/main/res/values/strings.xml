@@ -4,4 +4,6 @@
     <string name="tab_pending">Buy</string>
     <string name="tab_success">Bought</string>
     <string name="new_item_hint">New position</string>
+    <string name="confirmation">Confirm</string>
+    <string name="delete_selected_items_question">Delete all selected items?</string>
 </resources>
