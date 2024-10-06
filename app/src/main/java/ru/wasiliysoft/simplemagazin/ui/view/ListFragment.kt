@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -56,7 +57,7 @@ fun PendingFragment(model: MainViewModel) {
                 selectableMode = isSelectedMode,
             )
         }
-        Surface() {
+        Surface(color = MaterialTheme.colorScheme.secondaryContainer) {
             ItemInput(onItemComplete = model::addItem)
         }
     }
@@ -64,7 +65,7 @@ fun PendingFragment(model: MainViewModel) {
 
 
 @Composable
-fun succesedFragment(model: MainViewModel) {
+fun SuccesedFragment(model: MainViewModel) {
     val isSelectedMode = model.isSelectMode.value
 
     val cardCombinedClickableBehavior = object : CardCombinedClickable {
@@ -112,7 +113,7 @@ fun ItemInput(onItemComplete: (item: SimpleItem) -> Unit) {
             modifier = Modifier
                 .weight(1.0f)
                 .padding(4.dp),
-            onImeAction = submit
+            onImeAction = submit,
         )
         TextButton(
             onClick = submit,
@@ -133,7 +134,7 @@ fun InputText(
     onImeAction: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    TextField(
+    OutlinedTextField(
         value = text,
         onValueChange = onTextChange,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
