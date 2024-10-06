@@ -1,33 +1,39 @@
 package ru.wasiliysoft.simplemagazin.ui.view
 
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import ru.wasiliysoft.simplemagazin.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun topAppBar() {
-    TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) }, elevation = 0.dp)
+fun TopAppBar() {
+    TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) })
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun topAppBarActionMode(
+fun TopAppBarActionMode(
     onCancel: () -> Unit,
     onDelete: () -> Unit,
 ) {
     TopAppBar(
         title = { Text("") },
-        elevation = 0.dp,
-        backgroundColor = MaterialTheme.colors.primaryVariant,
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         navigationIcon = {
             IconButton(onClick = onCancel) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    tint = MaterialTheme.colors.onPrimary,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = null
                 )
             }
@@ -37,7 +43,7 @@ fun topAppBarActionMode(
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = null,
-                    tint = MaterialTheme.colors.onPrimary,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         })

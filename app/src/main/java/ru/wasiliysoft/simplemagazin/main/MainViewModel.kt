@@ -3,7 +3,7 @@ package ru.wasiliysoft.simplemagazin.main
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.wasiliysoft.simplemagazin.data.DAO
@@ -32,8 +32,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val dao = DAO.getInstance(app.applicationContext)
     val list = dao.list
-    val pendingList = Transformations.map(list) { list -> list.filter { !it.isSuccess } }
-    val successList = Transformations.map(list) { list -> list.filter { it.isSuccess } }
+    val pendingList = list.map { it.filter { item -> !item.isSuccess } }
+    val successList = list.map { it.filter { item -> item.isSuccess } }
 
 
     fun addItem(simpleItem: SimpleItem) = viewModelScope.launch {

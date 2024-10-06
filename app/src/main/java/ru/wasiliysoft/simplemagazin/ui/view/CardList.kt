@@ -3,14 +3,18 @@ package ru.wasiliysoft.simplemagazin.ui.view
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,7 +28,6 @@ interface CardCombinedClickable {
     fun onClick(item: SimpleItem)
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun CardList(
     list: List<SimpleItem>,
@@ -35,11 +38,11 @@ fun CardList(
     LazyColumn(state = scrollState) {
         items(count = list.size, key = { list[it].id }) {
             val pos = it
-            itemCard(
+            ItemCard(
                 item = list[pos],
                 cardCombinedClickable = cardCombinedClickable,
                 selectableMode = selectableMode,
-                modifier = Modifier.animateItemPlacement()
+                modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
             )
         }
     }
@@ -48,15 +51,15 @@ fun CardList(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun itemCard(
+fun ItemCard(
     item: SimpleItem,
     cardCombinedClickable: CardCombinedClickable,
     selectableMode: Boolean,
     modifier: Modifier = Modifier
 ) {
     val color by animateColorAsState(
-        targetValue = if (item.selected) MaterialTheme.colors.primaryVariant
-        else MaterialTheme.colors.background
+        targetValue = if (item.selected) MaterialTheme.colorScheme.tertiaryContainer
+        else CardDefaults.cardColors().containerColor, label = "SelectCardAnimation"
     )
     var m = modifier
         .fillMaxWidth()
@@ -74,7 +77,7 @@ fun itemCard(
             onLongClick = { cardCombinedClickable.onLongClick(item) }
         )
     }
-    Card(backgroundColor = color, modifier = m) {
+    Card(colors = CardDefaults.cardColors(containerColor = color), modifier = m) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
             Text(item.title, modifier = Modifier.padding(8.dp))
         }
