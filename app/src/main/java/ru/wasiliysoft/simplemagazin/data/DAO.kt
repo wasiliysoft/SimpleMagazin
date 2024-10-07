@@ -61,9 +61,15 @@ class DAO private constructor(context: Context) {
         val oldItem = _list.find { it.id == item.id } ?: return
         val pos = _list.indexOf(oldItem)
         if (pos > -1) {
-            // _list[pos] = item
-            _list.removeAt(pos)
-            _list.add(item)
+            if (oldItem.isSuccess != item.isSuccess) {
+                // Выполняется перемещение елемента в другой список,
+                // поэтому удаляем и добавляем в конец списка "нового" спика
+                _list.removeAt(pos)
+                _list.add(item)
+            } else {
+                // Обновление без изменения порядка
+                _list[pos] = item
+            }
             commit(_list)
         }
     }
