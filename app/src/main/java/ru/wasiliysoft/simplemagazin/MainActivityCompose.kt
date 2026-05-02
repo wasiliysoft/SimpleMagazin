@@ -3,8 +3,10 @@ package ru.wasiliysoft.simplemagazin
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -26,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import ru.wasiliysoft.simplemagazin.main.MainViewModel
 import ru.wasiliysoft.simplemagazin.ui.theme.AppTheme
@@ -41,13 +44,17 @@ class MainActivityCompose : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setContent {
+            val navController = rememberNavController()
+
             AppTheme {
                 var confirmDialogIsShow by remember { mutableStateOf(false) }
 
                 Scaffold(
+                    modifier = Modifier.imePadding(),
                     topBar = {
                         if (vm.isSelectMode.value) TopAppBarActionMode(
                             onCancel = { vm.exitSelectMode() },
