@@ -3,6 +3,7 @@ package ru.wasiliysoft.simplemagazin.main
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
@@ -57,6 +58,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            BackHandler(enabled = vm.isSelectMode.value) {
+                vm.exitSelectMode()
+            }
             AppTheme {
                 var confirmDialogIsShow by remember { mutableStateOf(false) }
                 val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
