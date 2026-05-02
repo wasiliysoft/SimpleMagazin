@@ -1,0 +1,57 @@
+[versions]
+agp = "9.1.1"
+
+datastorePreferences = "1.2.1"
+kotlinGradlePlugin = "2.3.21"
+
+activity = "1.13.0"
+navigation = "2.9.8"
+lifecycle = "2.10.0"
+composeBom = "2026.04.01"
+
+retrofit = "3.0.0"
+gson = "3.0.0"
+timber = "5.0.1"
+appcompat = "1.7.1"
+material = "1.13.0"
+activityKtx = "1.13.0"
+datastore = "1.2.1"
+
+
+[libraries]
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gson" }
+
+
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
+
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
+lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+
+# AndroidX - Compose
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
+compose-material-icons-extended-android = { group = "androidx.compose.material", name = "material-icons-extended-android" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+
+[bundles]
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinGradlePlugin" }
+
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinGradlePlugin" }
+
