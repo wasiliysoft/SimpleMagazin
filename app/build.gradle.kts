@@ -33,8 +33,8 @@ android {
         applicationId = "ru.wasiliysoft.simplemagazin"
         minSdk = 23
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.1.4"
+        versionCode = 7
+        versionName = "1.2.0"
 //        resourceConfigurations += ['en', 'ru']
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
