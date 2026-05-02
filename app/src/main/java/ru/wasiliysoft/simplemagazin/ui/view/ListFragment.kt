@@ -1,6 +1,5 @@
 package ru.wasiliysoft.simplemagazin.ui.view
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,7 +58,6 @@ fun PendingFragment(model: MainViewModel) {
                 cardCombinedClickable = cardCombinedClickableBehavior,
                 selectableMode = isSelectedMode,
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom
             )
         }
         Surface(color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)) {
@@ -92,13 +90,12 @@ fun SuccessedFragment(model: MainViewModel) {
             }
         }
     }
-    val items by model.successList.observeAsState(initial = listOf())
+    val items by model.successList.observeAsState(initial = emptyList())
     CardList(
         list = items,
         cardCombinedClickable = cardCombinedClickableBehavior,
         selectableMode = isSelectedMode,
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top
     )
 }
 

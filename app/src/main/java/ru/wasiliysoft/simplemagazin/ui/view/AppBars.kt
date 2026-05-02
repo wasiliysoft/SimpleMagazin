@@ -16,13 +16,16 @@ import ru.wasiliysoft.simplemagazin.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar() {
+fun TopAppBar(onNewItemClick: () -> Unit) {
     TopAppBar(
         title = {
             Text(
                 text = stringResource(id = R.string.app_name),
                 color = MaterialTheme.colorScheme.primary
             )
+        },
+        actions = {
+//            IconButton(onClick = onNewItemClick) { Icon(Icons.Filled.Add, "New item") }
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
     )

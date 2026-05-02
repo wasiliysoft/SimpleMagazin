@@ -6,10 +6,8 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,7 +22,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,29 +43,35 @@ fun CardList(
     list: List<SimpleItem>,
     cardCombinedClickable: CardCombinedClickable,
     selectableMode: Boolean,
-    verticalArrangement: Arrangement.Vertical,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberLazyListState()
+    var previousCount by remember { mutableIntStateOf(list.size) }
+    LaunchedEffect(list.size) {
+        // Скроллим только если элементов стало БОЛЬШЕ
+        if (list.size > previousCount) {
+            scrollState.animateScrollToItem(list.size - 1)
+        }
+        // Обновляем счетчик для следующего раза
+        previousCount = list.size
+    }
+
     LazyColumn(
         state = scrollState, modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = verticalArrangement
     ) {
-        items(count = list.size, key = { list[it].id }) {
-            val pos = it
-            if (verticalArrangement == Arrangement.Bottom) {
-                Spacer(Modifier.height(16.dp))
-            }
+        items(count = list.size, key = { list[it].id }) { pos ->
             ItemCard(
                 item = list[pos],
                 cardCombinedClickable = cardCombinedClickable,
                 selectableMode = selectableMode,
-                modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
+                modifier = Modifier.animateItem(
+//                    fadeInSpec = null,
+//                    fadeOutSpec = null,
+//                    placementSpec = null
+                )
             )
-            if (verticalArrangement == Arrangement.Top) {
-                Spacer(Modifier.height(16.dp))
-            }
         }
     }
 }
