@@ -14,7 +14,7 @@ import ru.wasiliysoft.simplemagazin.data.SimpleItem
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private var _enterSelectMode = mutableStateOf(false)
-    val isSelectMode = _enterSelectMode
+    val isSelectionMode = _enterSelectMode
 
     val tabList = listOf(R.string.tab_pending, R.string.tab_success)
 

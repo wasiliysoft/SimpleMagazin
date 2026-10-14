@@ -30,7 +30,7 @@ import ru.wasiliysoft.simplemagazin.main.MainViewModel
 
 @Composable
 fun PendingFragment(model: MainViewModel) {
-    val isSelectedMode = model.isSelectMode.value
+    val isSelectedMode = model.isSelectionMode.value
     val cardCombinedClickableBehavior = object : CardCombinedClickable {
         override fun onLongClick(item: SimpleItem) {
             if (!isSelectedMode) {
@@ -69,7 +69,7 @@ fun PendingFragment(model: MainViewModel) {
 
 @Composable
 fun SuccessedFragment(model: MainViewModel) {
-    val isSelectedMode = model.isSelectMode.value
+    val isSelectedMode = model.isSelectionMode.value
 
     val cardCombinedClickableBehavior = object : CardCombinedClickable {
         override fun onLongClick(item: SimpleItem) {
