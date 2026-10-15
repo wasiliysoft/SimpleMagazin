@@ -4,7 +4,24 @@
     <string name="action_delete">Удалить</string>
     <string name="tab_pending">Купить</string>
     <string name="tab_success">Куплено</string>
-    <string name="new_item_hint">Новая позиция</string>
+    <string name="new_item_hint">Новая запись</string>
     <string name="confirmation">Подтверждение</string>
     <string name="delete_selected_items_question">Удалить все выделенные элементы?</string>
+
+    <string name="empty_pending_title">Тут пока ничего нет</string>
+    <string name="empty_pending_subtitle">Добавьте новую запись в поле ниже</string>
+    <plurals name="selected_count">
+        <item quantity="one">Выбран %d элемент</item>
+        <item quantity="few">Выбрано %d элемента</item>
+        <item quantity="many">Выбрано %d элементов</item>
+    </plurals>
+
+    <string name="delete_dialog_title">Удалить записи?</string>
+    <string name="delete_dialog_message_generic">Это действие нельзя отменить.</string>
+
+    <plurals name="delete_dialog_message">
+        <item quantity="one">Вы собираетесь удалить %d запись. Это действие нельзя отменить.</item>
+        <item quantity="few">Вы собираетесь удалить %d записи. Это действие нельзя отменить.</item>
+        <item quantity="many">Вы собираетесь удалить %d записей. Это действие нельзя отменить.</item>
+    </plurals>
 </resources>

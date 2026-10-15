@@ -3,7 +3,22 @@
     <string name="action_delete">Delete</string>
     <string name="tab_pending">Buy</string>
     <string name="tab_success">Bought</string>
-    <string name="new_item_hint">New position</string>
+    <string name="new_item_hint">New item</string>
     <string name="confirmation">Confirm</string>
     <string name="delete_selected_items_question">Delete all selected items?</string>
+
+    <string name="empty_pending_title">Nothing here yet</string>
+    <string name="empty_pending_subtitle">Add a new entry in the field below</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d item selected</item>
+        <item quantity="other">%d items selected</item>
+    </plurals>
+
+    <string name="delete_dialog_title">Delete entries?</string>
+    <string name="delete_dialog_message_generic">This action can\'t be undone.</string>
+
+    <plurals name="delete_dialog_message">
+        <item quantity="one">You are about to delete %d entry. This action can\'t be undone.</item>
+        <item quantity="other">You are about to delete %d entries. This action can\'t be undone.</item>
+    </plurals>
 </resources>

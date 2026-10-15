@@ -78,6 +78,7 @@ kotlin {
     }
 }
 dependencies {
+    implementation(libs.material3)
     implementation(libs.retrofit.gson)
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)

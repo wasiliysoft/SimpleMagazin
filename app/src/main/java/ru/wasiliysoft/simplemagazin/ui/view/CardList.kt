@@ -1,7 +1,6 @@
 package ru.wasiliysoft.simplemagazin.ui.view
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,17 +8,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Restore
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
 
@@ -57,9 +58,10 @@ fun CardList(
     }
 
     LazyColumn(
-        state = scrollState, modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp),
+        state = scrollState,
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),   // плотнее
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
     ) {
         items(count = list.size, key = { list[it].id }) { pos ->
             ItemCard(
@@ -76,57 +78,72 @@ fun CardList(
     }
 }
 
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ItemCard(
+private fun ItemCard(
     item: SimpleItem,
     cardCombinedClickable: CardCombinedClickable,
     selectableMode: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val color by animateColorAsState(
-        targetValue = if (item.selected) MaterialTheme.colorScheme.tertiaryContainer
-        else CardDefaults.cardColors().containerColor, label = "SelectCardAnimation"
+    val isSelected = item.selected
+
+    val containerColor by animateColorAsState(
+        targetValue = when {
+            isSelected -> MaterialTheme.colorScheme.primaryContainer
+            else -> MaterialTheme.colorScheme.surfaceContainerLow  // subtle surface, не белый
+        },
+        label = "SelectCardAnimation"
     )
-    var m = modifier
-        .fillMaxWidth()
-        .defaultMinSize(minHeight = 48.dp)
-    m = if (selectableMode) {
-        m.selectable(selected = item.selected) {
-            println("onClick in selectable")
-            cardCombinedClickable.onClick(item)
-        }
+    val contentColor = when {
+        isSelected -> MaterialTheme.colorScheme.onPrimaryContainer
+        else -> MaterialTheme.colorScheme.onSurface
+    }
+
+    val clickModifier = if (selectableMode) {
+        Modifier.selectable(selected = isSelected) { cardCombinedClickable.onClick(item) }
     } else {
-        m.combinedClickable(
-            onClick = { println("onClick in combinedClickable") },
+        Modifier.combinedClickable(
+            onClick = {},
             onDoubleClick = { cardCombinedClickable.onDoubleClick(item) },
             onLongClick = { cardCombinedClickable.onLongClick(item) }
         )
     }
-    Card(
-        colors = CardDefaults.cardColors(containerColor = color),
-        modifier = m
+
+    OutlinedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(clickModifier),
+        colors = CardDefaults.cardColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
     ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .defaultMinSize(minHeight = 44.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             Text(
                 text = item.title,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-                    .weight(1.0f)
+                style = MaterialTheme.typography.bodyLarge,
+                color = contentColor,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
             )
-            if (item.isSuccess) {
-                IconButton(
-                    onClick = { cardCombinedClickable.onDoubleClick(item) }) {
-                    Icon(Icons.Filled.Restore, "Restore")
-                }
-            } else {
-                IconButton(
-                    onClick = { cardCombinedClickable.onDoubleClick(item) }) {
-                    Icon(Icons.Filled.Done, "Done")
-                }
+
+            IconButton(
+                onClick = { cardCombinedClickable.onDoubleClick(item) },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = if (item.isSuccess) Icons.AutoMirrored.Outlined.Undo else Icons.Outlined.CheckCircle,
+                    contentDescription = if (item.isSuccess) "Вернуть в активные" else "Отметить выполненным",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
-
     }
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -44,6 +45,14 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     val pendingList = list.map { it.filter { item -> !item.isSuccess } }
     val successList = list.map { it.filter { item -> item.isSuccess } }
 
+    fun getSelectedCount(pagerState: PagerState): LiveData<Int> {
+        val selected = when (tabList[pagerState.currentPage]) {
+            R.string.tab_pending -> pendingList.map { items -> items.filter { it.selected }.size }
+            R.string.tab_success -> successList.map { items -> items.filter { it.selected }.size }
+            else -> throw Exception("pagerState not identified")
+        }
+        return selected
+    }
 
     fun addItem(simpleItem: SimpleItem) = viewModelScope.launch {
         dao.insert(simpleItem)

@@ -7,6 +7,9 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -24,20 +27,20 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -51,7 +54,7 @@ import ru.wasiliysoft.simplemagazin.ui.view.SuccessedFragment
 class MainActivity : ComponentActivity() {
     private val vm: MainViewModel by lazy {
         val fa = ViewModelProvider.AndroidViewModelFactory(this.application)
-        ViewModelProvider(this, fa).get(MainViewModel::class.java)
+        ViewModelProvider(this, fa)[MainViewModel::class.java]
     }
 
     @OptIn(ExperimentalLayoutApi::class)
@@ -69,11 +72,27 @@ class MainActivity : ComponentActivity() {
             BackHandler(enabled = pagerState.currentPage != 0) {
                 lifecycleScope.launch { pagerState.scrollToPage(0) }
             }
-
             AppTheme {
+                val chromeContainerColor by animateColorAsState(
+                    targetValue = if (isSelectionMode) {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+                    animationSpec = tween(durationMillis = 200, easing = LinearEasing),
+                    label = "ChromeContainer"
+                )
+                val chromeContentColor by animateColorAsState(
+                    targetValue = if (isSelectionMode) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    animationSpec = tween(durationMillis = 200, easing = LinearEasing),
+                    label = "ChromeContent"
+                )
                 var confirmDialogIsShow by remember { mutableStateOf(false) }
-                Scaffold(
-                    topBar = { StatusBarPlaceholder(isSelectionMode) }
+                Scaffold(topBar = { StatusBarPlaceholder(chromeContainerColor) }
                 ) { paddingValues ->
                     Column(
                         modifier = Modifier
@@ -92,13 +111,17 @@ class MainActivity : ComponentActivity() {
                             Column {
                                 MainTopAppBar(
                                     isSelectionMode = isSelectionMode,
+                                    chromeContainerColor = chromeContainerColor,
+                                    chromeContentColor = chromeContentColor,
                                     onDismissSelectionMode = vm::exitSelectMode,
+                                    selectedCount = vm.getSelectedCount(pagerState).observeAsState(0).value,
                                     onDeleteAction = { confirmDialogIsShow = true }
                                 )
                                 TabBar(
                                     tabTitles = tabData,
                                     pagerState = pagerState,
-                                    isSelectionMode = isSelectionMode
+                                    chromeContainerColor = chromeContainerColor,
+                                    chromeContentColor = chromeContentColor,
                                 )
                             }
                         }
@@ -118,18 +141,19 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-
                     if (confirmDialogIsShow) {
                         val onDismissRequest = { confirmDialogIsShow = false }
                         val onConfirm = {
                             vm.deleteSelectedItems(pagerState)
                             onDismissRequest()
                         }
-                        ConfirmDeleteDialog(
+                        ConfirmDeleteSheet(
+                            onConfirm = onConfirm,
                             onDismissRequest = onDismissRequest,
-                            onConfirm = onConfirm
+                            selectedCount = vm.getSelectedCount(pagerState).observeAsState(0).value,
                         )
                     }
+
                 }
             }
         }
@@ -143,47 +167,28 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun StatusBarPlaceholder(isSelectionMode: Boolean) {
-    val statusBarColor = when (isSelectionMode) {
-        true -> MaterialTheme.colorScheme.surfaceVariant
-        false -> MaterialTheme.colorScheme.primaryContainer
-    }
+private fun StatusBarPlaceholder(color: Color) {
     Column(
-        modifier = Modifier.fillMaxWidth()
-            .background(statusBarColor)
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color)
             .windowInsetsPadding(WindowInsets.statusBars)
     ) {}
-}
-
-@Composable
-private fun ConfirmDeleteDialog(
-    onDismissRequest: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { Text(stringResource(R.string.confirmation)) },
-        text = { Text(stringResource(R.string.delete_selected_items_question)) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(stringResource(android.R.string.ok))
-            }
-        }
-    )
 }
 
 @Composable
 private fun TabBar(
     tabTitles: List<String>,
     pagerState: PagerState,
-    isSelectionMode: Boolean
+    chromeContainerColor: Color,
+    chromeContentColor: Color
 ) {
     val coroutineScope = rememberCoroutineScope()
     val activeTabIndex = pagerState.currentPage
-    TabRow(
+    SecondaryTabRow(
         selectedTabIndex = activeTabIndex,
-        containerColor = (if (isSelectionMode) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primaryContainer),
-        contentColor = (if (isSelectionMode) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimaryContainer)
+        containerColor = chromeContainerColor,
+        contentColor = chromeContentColor
     ) {
         tabTitles.forEachIndexed { index, tabTitle ->
             Tab(
@@ -198,4 +203,3 @@ private fun TabBar(
         }
     }
 }
-
