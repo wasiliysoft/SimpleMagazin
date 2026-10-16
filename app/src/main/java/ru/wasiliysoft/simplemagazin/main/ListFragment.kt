@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin.ui.view
+package ru.wasiliysoft.simplemagazin.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.wasiliysoft.simplemagazin.R
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
-import ru.wasiliysoft.simplemagazin.main.MainViewModel
 
 @Composable
 fun PendingFragment(model: MainViewModel) {

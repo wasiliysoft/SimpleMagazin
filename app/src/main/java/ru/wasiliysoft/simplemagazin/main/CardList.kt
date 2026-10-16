@@ -1,4 +1,4 @@
-package ru.wasiliysoft.simplemagazin.ui.view
+package ru.wasiliysoft.simplemagazin.main
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.combinedClickable

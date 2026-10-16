@@ -48,8 +48,6 @@ import kotlinx.coroutines.launch
 import ru.wasiliysoft.simplemagazin.R
 import ru.wasiliysoft.simplemagazin.edit.DetailEditActivity
 import ru.wasiliysoft.simplemagazin.ui.theme.AppTheme
-import ru.wasiliysoft.simplemagazin.ui.view.PendingFragment
-import ru.wasiliysoft.simplemagazin.ui.view.SuccessedFragment
 
 class MainActivity : ComponentActivity() {
     private val vm: MainViewModel by lazy {
