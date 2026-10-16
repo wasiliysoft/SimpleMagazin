@@ -25,7 +25,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,122 +36,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.wasiliysoft.simplemagazin.R
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
 
 @Composable
 fun PendingFragment(model: MainViewModel) {
-    val isSelectedMode = model.isSelectionMode.value
-    val cardCombinedClickableBehavior = object : CardCombinedClickable {
-        override fun onLongClick(item: SimpleItem) {
-            if (!isSelectedMode) {
-                model.enterSelectMode()
-            }
-        }
+    val items by model.pendingList.collectAsStateWithLifecycle()
+    val isSelectionMode by model.isSelectionMode.collectAsStateWithLifecycle()
 
-        override fun onDoubleClick(item: SimpleItem) {
-            if (!isSelectedMode) {
-                model.toSuccess(item)
-            }
-        }
-
-        override fun onClick(item: SimpleItem) {
-            if (isSelectedMode) {
-                model.update(item.copy(selected = !item.selected))
-            }
-        }
-    }
-    val items by model.pendingList.observeAsState(initial = listOf())
-    Column(modifier = Modifier.fillMaxSize()) {
-        if (items.isEmpty()) {
+    ItemListScreen(
+        items = items,
+        isSelectionMode = isSelectionMode,
+        onItemClick = model::toggleSelected,
+        onItemLongClick = model::enterSelectMode,
+        onItemDoubleClick = model::toSuccess,
+        emptyState = {
             EmptyState(
                 icon = Icons.Outlined.Checklist,
                 title = stringResource(R.string.empty_pending_title),
                 subtitle = stringResource(R.string.empty_pending_subtitle),
-                modifier = Modifier.weight(1f)
             )
-        } else {
-            CardList(
-                list = items,
-                cardCombinedClickable = cardCombinedClickableBehavior,
-                selectableMode = isSelectedMode,
-                modifier = Modifier.weight(1f)
-            )
-        }
-        ItemInput(onItemComplete = model::addItem)
-    }
-}
-
-@Composable
-private fun EmptyState(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(56.dp),
-            tint = MaterialTheme.colorScheme.outline
-        )
-        Spacer(Modifier.height(16.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun SuccessedFragment(model: MainViewModel) {
-    val isSelectedMode = model.isSelectionMode.value
-
-    val cardCombinedClickableBehavior = object : CardCombinedClickable {
-        override fun onLongClick(item: SimpleItem) {
-            if (!isSelectedMode) {
-                model.enterSelectMode()
-            }
-        }
-
-        override fun onDoubleClick(item: SimpleItem) {
-            if (!isSelectedMode) {
-                model.toPending(item)
-            }
-        }
-
-        override fun onClick(item: SimpleItem) {
-            if (isSelectedMode) {
-                model.update(item.copy(selected = !item.selected))
-            }
-        }
-    }
-    val items by model.successList.observeAsState(initial = emptyList())
-    CardList(
-        list = items,
-        cardCombinedClickable = cardCombinedClickableBehavior,
-        selectableMode = isSelectedMode,
-        modifier = Modifier.fillMaxSize(),
+        },
+        bottomBar = { ItemInput(onItemComplete = model::addItem) }
     )
 }
 
 @Composable
-fun ItemInput(onItemComplete: (item: SimpleItem) -> Unit) {
+private fun ItemInput(onItemComplete: (item: SimpleItem) -> Unit) {
     var text by remember { mutableStateOf("") }
     val submit = {
         if (text.isNotBlank()) {
@@ -199,5 +110,41 @@ fun ItemInput(onItemComplete: (item: SimpleItem) -> Unit) {
                 Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = "Добавить")
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyState(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(56.dp),
+            tint = MaterialTheme.colorScheme.outline
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
     }
 }

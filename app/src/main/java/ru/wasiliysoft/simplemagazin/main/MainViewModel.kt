@@ -1,72 +1,77 @@
 package ru.wasiliysoft.simplemagazin.main
 
-import android.app.Application
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ru.wasiliysoft.simplemagazin.R
-import ru.wasiliysoft.simplemagazin.data.DAO
+import ru.wasiliysoft.simplemagazin.data.MainTab
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
+import ru.wasiliysoft.simplemagazin.repo.LocalStorage
 
-class MainViewModel(app: Application) : AndroidViewModel(app) {
+class MainViewModel : ViewModel() {
 
-    private var _enterSelectMode = mutableStateOf(false)
-    val isSelectionMode = _enterSelectMode
+    private val repo = LocalStorage
 
-    val tabList = listOf(R.string.tab_pending, R.string.tab_success)
+    val pendingList: StateFlow<List<SimpleItem>> = repo.list
+        .map { items -> items.filter { !it.isSuccess } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val successList: StateFlow<List<SimpleItem>> = repo.list
+        .map { items -> items.filter { it.isSuccess } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _selectionMode = MutableStateFlow(false)
+    val isSelectionMode: StateFlow<Boolean> = _selectionMode.asStateFlow()
     fun enterSelectMode() {
-        _enterSelectMode.value = true
+        _selectionMode.value = true
     }
 
     fun exitSelectMode() {
-        _enterSelectMode.value = false
+        _selectionMode.value = false
     }
 
-    fun deleteSelectedItems(pagerState: PagerState) {
-        val selected = when (tabList[pagerState.currentPage]) {
-            R.string.tab_pending -> pendingList.value?.filter { it.selected } ?: emptyList()
-            R.string.tab_success -> successList.value?.filter { it.selected } ?: emptyList()
-            else -> emptyList()
-        }
-        viewModelScope.launch {
-            dao.delete(selected)
-            exitSelectMode()
-        }
+    private val _activeTab = MutableStateFlow(MainTab.PENDING)
+    fun onTabChanged(tab: MainTab) {
+        _activeTab.value = tab
     }
 
 
-    private val dao = DAO.getInstance(app.applicationContext)
-    val list = dao.list
-    val pendingList = list.map { it.filter { item -> !item.isSuccess } }
-    val successList = list.map { it.filter { item -> item.isSuccess } }
+    private val activeList: StateFlow<List<SimpleItem>> =
+        combine(_activeTab, pendingList, successList) { tab, pending, success ->
+            when (tab) {
+                MainTab.PENDING -> pending
+                MainTab.SUCCESS -> success
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun getSelectedCount(pagerState: PagerState): LiveData<Int> {
-        val selected = when (tabList[pagerState.currentPage]) {
-            R.string.tab_pending -> pendingList.map { items -> items.filter { it.selected }.size }
-            R.string.tab_success -> successList.map { items -> items.filter { it.selected }.size }
-            else -> throw Exception("pagerState not identified")
-        }
-        return selected
+    val selectedCount: StateFlow<Int> = activeList
+        .map { items -> items.count { it.selected } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    fun deleteSelected() = viewModelScope.launch {
+        val selected = activeList.value.filter { it.selected }
+        if (selected.isEmpty()) return@launch
+        repo.delete(selected)
+        exitSelectMode()
     }
 
-    fun addItem(simpleItem: SimpleItem) = viewModelScope.launch {
-        dao.insert(simpleItem)
-    }
+    fun addItem(item: SimpleItem) = viewModelScope.launch { repo.insert(item) }
 
-    fun update(simpleItem: SimpleItem) = viewModelScope.launch {
-        dao.update(simpleItem)
+    fun toggleSelected(item: SimpleItem) = viewModelScope.launch {
+        repo.update(item.copy(selected = !item.selected))
     }
 
     fun toPending(item: SimpleItem) = viewModelScope.launch {
-        dao.toPending(item)
+        repo.update(item.copy(isSuccess = false))
     }
 
     fun toSuccess(item: SimpleItem) = viewModelScope.launch {
-        dao.toSuccess(item)
+        repo.update(item.copy(isSuccess = true))
     }
 }

@@ -4,11 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ru.wasiliysoft.simplemagazin.data.DAO
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
+import ru.wasiliysoft.simplemagazin.repo.LocalStorage
 
 class DetailEditViewModel(app: Application) : AndroidViewModel(application = app) {
-    private val repository = DAO.getInstance(app.applicationContext)
+    private val repository = LocalStorage
     fun addItem(simpleItem: SimpleItem) = viewModelScope.launch {
         repository.insert(simpleItem)
     }

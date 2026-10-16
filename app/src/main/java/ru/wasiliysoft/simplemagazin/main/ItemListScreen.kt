@@ -1,15 +1,23 @@
 package ru.wasiliysoft.simplemagazin.main
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
@@ -24,54 +32,86 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import ru.wasiliysoft.simplemagazin.data.SimpleItem
 
-interface CardCombinedClickable {
-    fun onLongClick(item: SimpleItem)
-    fun onDoubleClick(item: SimpleItem)
-    fun onClick(item: SimpleItem)
-}
 
 @Composable
-fun CardList(
+fun ItemListScreen(
+    items: List<SimpleItem>,
+    isSelectionMode: Boolean,
+    onItemClick: (SimpleItem) -> Unit,
+    onItemLongClick: () -> Unit,
+    onItemDoubleClick: (SimpleItem) -> Unit,
+    emptyState: (@Composable () -> Unit)? = null,
+    bottomBar: (@Composable () -> Unit)? = null,
+) {
+    Column(Modifier.fillMaxSize()) {
+        if (items.isEmpty() && emptyState != null) {
+            Box(Modifier.weight(1f)) { emptyState() }
+        } else {
+            CardList(
+                list = items,
+                selectableMode = isSelectionMode,
+                onItemClick = onItemClick,
+                onItemLongClick = onItemLongClick,
+                onItemDoubleClick = onItemDoubleClick,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        bottomBar?.invoke()
+    }
+}
+
+
+@Composable
+private fun CardList(
     list: List<SimpleItem>,
-    cardCombinedClickable: CardCombinedClickable,
     selectableMode: Boolean,
+    onItemClick: (SimpleItem) -> Unit,
+    onItemLongClick: () -> Unit,
+    onItemDoubleClick: (SimpleItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberLazyListState()
-    var previousCount by remember { mutableIntStateOf(list.size) }
+    val previousCountHolder = remember { arrayOf(list.size) }
+
     LaunchedEffect(list.size) {
-        // Скроллим только если элементов стало БОЛЬШЕ
-        if (list.size > previousCount) {
+        val prev = previousCountHolder[0]
+        if (list.size > prev) {
+            // даём кадр, чтобы новый item попал в layout
+            withFrameNanos { }
             scrollState.animateScrollToItem(list.size - 1)
         }
-        // Обновляем счетчик для следующего раза
-        previousCount = list.size
+        previousCountHolder[0] = list.size
     }
 
     LazyColumn(
         state = scrollState,
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),   // плотнее
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
     ) {
-        items(count = list.size, key = { list[it].id }) { pos ->
+        items(items = list, key = { it.id }) { item ->
             ItemCard(
-                item = list[pos],
-                cardCombinedClickable = cardCombinedClickable,
+                item = item,
                 selectableMode = selectableMode,
+                onClick = onItemClick,
+                onLongClick = onItemLongClick,
+                onDoubleClick = onItemDoubleClick,
                 modifier = Modifier.animateItem(
-//                    fadeInSpec = null,
-//                    fadeOutSpec = null,
-//                    placementSpec = null
+                    fadeInSpec = tween(200),
+                    fadeOutSpec = tween(200),
+                    placementSpec = spring(
+                        stiffness = Spring.StiffnessMediumLow,
+                        visibilityThreshold = IntOffset.VisibilityThreshold
+                    )
                 )
             )
         }
@@ -81,31 +121,36 @@ fun CardList(
 @Composable
 private fun ItemCard(
     item: SimpleItem,
-    cardCombinedClickable: CardCombinedClickable,
     selectableMode: Boolean,
+    onClick: (SimpleItem) -> Unit,
+    onLongClick: () -> Unit,
+    onDoubleClick: (SimpleItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isSelected = item.selected
-
     val containerColor by animateColorAsState(
-        targetValue = when {
-            isSelected -> MaterialTheme.colorScheme.primaryContainer
-            else -> MaterialTheme.colorScheme.surfaceContainerLow  // subtle surface, не белый
+        targetValue = if (item.selected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
         },
         label = "SelectCardAnimation"
     )
-    val contentColor = when {
-        isSelected -> MaterialTheme.colorScheme.onPrimaryContainer
-        else -> MaterialTheme.colorScheme.onSurface
-    }
+
+    val contentColor by animateColorAsState(
+        targetValue = if (item.selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+        label = "SelectContentAnimation"
+    )
 
     val clickModifier = if (selectableMode) {
-        Modifier.selectable(selected = isSelected) { cardCombinedClickable.onClick(item) }
+        Modifier.selectable(
+            selected = item.selected,
+            onClick = { onClick(item) }
+        )
     } else {
         Modifier.combinedClickable(
             onClick = {},
-            onDoubleClick = { cardCombinedClickable.onDoubleClick(item) },
-            onLongClick = { cardCombinedClickable.onLongClick(item) }
+            onDoubleClick = { onDoubleClick(item) },
+            onLongClick = onLongClick
         )
     }
 
@@ -133,14 +178,17 @@ private fun ItemCard(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
-
             IconButton(
-                onClick = { cardCombinedClickable.onDoubleClick(item) },
+                onClick = { onDoubleClick(item) },
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
-                    imageVector = if (item.isSuccess) Icons.AutoMirrored.Outlined.Undo else Icons.Outlined.CheckCircle,
-                    contentDescription = if (item.isSuccess) "Вернуть в активные" else "Отметить выполненным",
+                    imageVector = if (item.isSuccess) {
+                        Icons.AutoMirrored.Outlined.Undo
+                    } else {
+                        Icons.Outlined.CheckCircle
+                    },
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
